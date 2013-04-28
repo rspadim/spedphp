@@ -41,14 +41,18 @@
         "ext-openssl": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
+        "ext-pdo_sqlite": "*",
         "apigen/apigen": ">=2.8.0",
-        "openlss/lib-array2xml": "dev-master"
+        "openlss/lib-array2xml": "dev-master",
+        "zendframework/zendpdf": ">=2.0.2",
+        "zendframework/zend-mail": ">=2.1.5"
     },
     "autoload": {
         "psr-0": {
             "NFePHP": "src/",
             "library": "src/"        
-            
         }
     }
 }
