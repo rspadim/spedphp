@@ -1,0 +1,11 @@
+nbproject
+vendor
+*~
+.idea
+.DS_Store
+composer.lock
+*.pfx
+*.pem
+config.php
+local
+
