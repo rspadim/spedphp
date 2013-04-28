@@ -16,9 +16,9 @@ use library\Exception\NfephpException;
 
 class Pkcs12Certs
 {
-
+    
     public $certsDir;
-    public $certName;
+    public $pfxName;
     public $keyPass;
     public $cnpj;
     public $pubKEY;
@@ -27,54 +27,34 @@ class Pkcs12Certs
     public $certMonthsToExpire;
     public $certDaysToExpire;
     public $pfxTimestamp;
+
+    //constantes utilizadas na assinatura digital do xml
+    const URLDSIG = 'http://www.w3.org/2000/09/xmldsig#';
+    const URLCANONMETH = 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
+    const URLSIGMETH = 'http://www.w3.org/2000/09/xmldsig#rsa-sha1';
+    const URLTRANSFMETH1 ='http://www.w3.org/2000/09/xmldsig#enveloped-signature';
+    const URLTRANSFMETH2 = 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
+    const URLDIGESTMETH = 'http://www.w3.org/2000/09/xmldsig#sha1';
     
-   
     /**
-     * URLdsig
-     * Instância do WebService
-     * @var string
+     * __contruct 
+     * 
+     * @param string $certsDir  Diretorio onde os certificados serão armazenados
+     * @param string $pfxName   Nome do arquivo pfrx colocado no diretório acima indicado
+     * @param string $keyPass   Senha para acesso aos dados do certificado digital
+     * @param string $cnpj      CNPJ do proprietário do certificado
+     * @return boolean          True em caso de sucesso ou false em caso de erro  
+     * @throws \library\Exception\NfephpException
+     * @throws NfephpException
      */
-    private $URLdsig='http://www.w3.org/2000/09/xmldsig#';
-    /**
-     * URLCanonMeth
-     * Instância do WebService
-     * @var string
-     */
-    private $URLCanonMeth='http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
-    /**
-     * URLSigMeth
-     * Instância do WebService
-     * @var string
-     */
-    private $URLSigMeth='http://www.w3.org/2000/09/xmldsig#rsa-sha1';
-    /**
-     * URLTransfMeth_1
-     * Instância do WebService
-     * @var string
-     */
-    private $URLTransfMeth_1='http://www.w3.org/2000/09/xmldsig#enveloped-signature';
-    /**
-     * URLTransfMeth_2
-     * Instância do WebService
-     * @var string
-     */
-    private $URLTransfMeth_2='http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
-    /**
-     * URLDigestMeth
-     * Instância do WebService
-     * @var string
-     */
-    private $URLDigestMeth='http://www.w3.org/2000/09/xmldsig#sha1';
- 
-    
-    public function __construct($certsDir = '', $certName = '', $keyPass = '', $cnpj = '',$testaVal=false)
+    public function __construct($certsDir = '', $pfxName = '', $keyPass = '', $cnpj = '')
     {
         try {
             if ($certsDir == '') {
                 $msg = "O caminho para os arquivos dos certificados deve ser passado!!";
                 throw new NfephpException($msg);
             }
-            if ($certName == '') {
+            if ($pfxName == '') {
                 $msg = "O nome do certificado .pfx deve ser passado!!";
                 throw new NfephpException($msg);
             }
@@ -86,13 +66,23 @@ class Pkcs12Certs
                 $msg = "O numero do CNPJ do certificado deve ser passado!!";
                 throw new NfephpException($msg);
             }
+            //limpar bobagens
+            $certsDir = trim($certsDir);
+            $pfxName = trim($pfxName);
+            $keyPass = trim($keyPass);
+            $cnpj = trim($cnpj);
+            
+            if (substr($certsDir, -1) !== DIRECTORY_SEPARATOR) {
+                $certsDir .= DIRECTORY_SEPARATOR;
+            }
+            if (!file_exists($certsDir . $pfxName)){
+                $msg = "O arquivo do certificado pfx não foi encontrado!!";
+                throw new NfephpException($msg);
+            }
             $this->certsDir = $certsDir;
-            $this->certName = $certName;
+            $this->pfxName = $pfxName;
             $this->keyPass = $keyPass;
             $this->cnpj = $cnpj;
-            
-            //$this->loadCerts($testaVal);
-            
         } catch (NfephpException $e) {
             throw $e;
             return false;
@@ -143,12 +133,12 @@ class Pkcs12Certs
             $this->certKEY = $this->certsDir.$this->cnpj.'_certKEY.pem';
             //verificar se o nome do certificado e
             //o path foram carregados nas variaveis da classe
-            if ($this->certsDir == '' || $this->certName == '') {
+            if ($this->certsDir == '' || $this->pfxName == '') {
                 $msg = "Um certificado deve ser passado para a classe pelo arquivo de configuração!! ";
                 throw new NfephpException($msg);
             }
             //monta o caminho completo até o certificado pfx
-            $pfxCert = $this->certsDir.$this->certName;
+            $pfxCert = $this->certsDir.$this->pfxName;
             //verifica se o arquivo existe
             if (!file_exists($pfxCert)) {
                 $msg = "Certificado não encontrado!! $pfxCert";
@@ -297,7 +287,6 @@ class Pkcs12Certs
             $this->pfxTimestamp = $dValid;
             $aRetorno = array('status'=>$flagOK,'error'=>$errorMsg,'meses'=>$monthsToExpire,'dias'=>$daysToExpire);
         } catch (NfephpException $e) {
-            $this->setError($e->getMessage());
             throw $e;
             return false;
         }
@@ -333,7 +322,6 @@ class Pkcs12Certs
                 }
             }
         } catch (NfephpException $e) {
-            $this->setError($e->getMessage());
             throw $e;
             return false;
         }
@@ -369,6 +357,7 @@ class Pkcs12Certs
             } else {
                 $xml = $docxml;
             }
+            //testar o xml a procura de erros antes de prosseguir
             // obter o chave privada para a ssinatura
             $fp = fopen($this->priKEY, "r");
             $priv_key = fread($fp, 8192);
@@ -417,18 +406,18 @@ class Pkcs12Certs
             //converte o valor para base64 para serem colocados no xml
             $digValue = base64_encode($hashValue);
             //monta a tag da assinatura digital
-            $Signature = $xmldoc->createElementNS($this->URLdsig, 'Signature');
+            $Signature = $xmldoc->createElementNS(URLDSIG, 'Signature');
             $root->appendChild($Signature);
             $SignedInfo = $xmldoc->createElement('SignedInfo');
             $Signature->appendChild($SignedInfo);
             //Cannocalization
             $newNode = $xmldoc->createElement('CanonicalizationMethod');
             $SignedInfo->appendChild($newNode);
-            $newNode->setAttribute('Algorithm', $this->URLCanonMeth);
+            $newNode->setAttribute('Algorithm', URLCANONMETH);
             //SignatureMethod
             $newNode = $xmldoc->createElement('SignatureMethod');
             $SignedInfo->appendChild($newNode);
-            $newNode->setAttribute('Algorithm', $this->URLSigMeth);
+            $newNode->setAttribute('Algorithm', URLSIGMETH);
             //Reference
             $Reference = $xmldoc->createElement('Reference');
             $SignedInfo->appendChild($Reference);
@@ -439,15 +428,15 @@ class Pkcs12Certs
             //Transform
             $newNode = $xmldoc->createElement('Transform');
             $Transforms->appendChild($newNode);
-            $newNode->setAttribute('Algorithm', $this->URLTransfMeth_1);
+            $newNode->setAttribute('Algorithm', URLTRANSFMETH1);
             //Transform
             $newNode = $xmldoc->createElement('Transform');
             $Transforms->appendChild($newNode);
-            $newNode->setAttribute('Algorithm', $this->URLTransfMeth_2);
+            $newNode->setAttribute('Algorithm', URLTRANSFMETH2);
             //DigestMethod
             $newNode = $xmldoc->createElement('DigestMethod');
             $Reference->appendChild($newNode);
-            $newNode->setAttribute('Algorithm', $this->URLDigestMeth);
+            $newNode->setAttribute('Algorithm', URLDIGESTMETH);
             //DigestValue
             $newNode = $xmldoc->createElement('DigestValue', $digValue);
             $Reference->appendChild($newNode);
