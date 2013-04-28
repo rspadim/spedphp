@@ -49,7 +49,8 @@
         "zendframework/zendpdf": ">=2.0.2",
         "zendframework/zend-mail": ">=2.1.5",
         "zendframework/zend-barcode": ">=2.1.5",
-        "ensepar/tcpdf": "dev-master"
+        "ensepar/tcpdf": "dev-master",
+        "phpmailer/phpmailer": ">=v5.2.6"
     },
     "autoload": {
         "psr-0": {
