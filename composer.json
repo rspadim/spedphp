@@ -47,7 +47,8 @@
         "apigen/apigen": ">=2.8.0",
         "openlss/lib-array2xml": "dev-master",
         "zendframework/zendpdf": ">=2.0.2",
-        "zendframework/zend-mail": ">=2.1.5"
+        "zendframework/zend-mail": ">=2.1.5",
+        "zendframework/zend-barcode": ">=2.1.5"
     },
     "autoload": {
         "psr-0": {
