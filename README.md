@@ -1,5 +1,5 @@
-##SPEDPHP    Versão: 0.0.1-dev  
-
+SPEDPHP    Versão: 0.0.1-dev  
+=========================
   
 Este é o repositorio para o desenvolvimento e refatoração da API NFePHP.
 
