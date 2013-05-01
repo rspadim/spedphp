@@ -16,7 +16,6 @@ use library\Exception\NfephpException;
 use library\Soap\NfephpSoapClient;
 use library\Pkcs12\Pkcs12;
 
-
 /**
  * @package   NFePHP
  * @name      NFePHP
@@ -3359,14 +3358,14 @@ class NFePHP
         //converte o xml em array
         $ws = XML2Array::createArray($xml);
         //para cada UF
-        foreach($ws['WS']['UF'] as $uf) {
+        foreach ($ws['WS']['UF'] as $uf) {
             $sigla = $uf['sigla'];
             $ambiente = array('homologacao','producao');
             //para cada ambiente
-            foreach($ambiente as $amb) {
+            foreach ($ambiente as $amb) {
                 $h = $uf[$amb];
                 if (isset($h)) {
-                    foreach($h as $k => $j) {
+                    foreach ($h as $k => $j) {
                         $nome = $k;
                         $url=$j['@value'];
                         $metodo=$j['@attributes']['method'];
