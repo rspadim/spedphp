@@ -15,4 +15,5 @@ Bases da Refatoração
 - PHP CodeSniffer PSR 2, para o estilo do código
 - PHPUnit, para desenvolvimento de testes
 - Composer, para atendimento das dependências
+- ApiGen, para geração da documentação
 
