@@ -14,7 +14,7 @@ _Um bom inicio para os contribuidores é usar as recomendações do [PHP do Jeit
 #Bases para a Refatoração
 
 
-- PHP CodeSniffer PSR 2, para o estilo do código
+- [PHP_CodeSniffer][http://pear.php.net/package/PHP_CodeSniffer/redirected] [PSR 2], para o estilo do código
 - PHPUnit, para desenvolvimento de testes
 - Composer, para gerenciamento de dependências
 - ApiGen, para geração da documentação
