@@ -15,7 +15,10 @@ _Um bom inicio para os contribuidores é usar as recomendações do [PHP do Jeit
 
 
 - [PHP_CodeSniffer](http://pear.php.net/package/PHP_CodeSniffer/redirected) [PSR 2](https://github.com/php-fig/fig-standards/blob/master/accepted/PSR-2-coding-style-guide.md), para o estilo do código
-- PHPUnit, para desenvolvimento de testes
-- Composer, para gerenciamento de dependências
-- ApiGen, para geração da documentação
+- [PHPUnit](http://phpunit.de/manual/3.6/en/installation.html), para desenvolvimento de testes
+- [Composer](http://getcomposer.org/doc/00-intro.md), para gerenciamento de dependências
+
+#Dependências providas pelo Composer
+
+- [ApiGen](http://apigen.org/), para geração da documentação
 
