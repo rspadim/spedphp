@@ -1,19 +1,21 @@
-SPEDPHP  NFePHP REFATORADO para PHP 5.3 e 5.4
-=============================================
-
-Codigos em desenvolvimento não usar, estão INCOMPLETOS e NÃO funcionais ....
-
-Versão : 0.0.1-dev 
-
-Um bom inicio para os contribuidores é usar as recomendações do [PHP do Jeito Certo](http://br.phptherightway.com/) 
-
+SPEDPHP    Versão: 0.0.1-dev  
+=======  
+  
 Este é o repositorio para o desenvolvimento e refatoração da API NFePHP.
 
-Bases da Refatoração
----------------------
+**Atenção :**
+-
+> Códigos em desenvolvimento não usar, estão INCOMPLETOS e NÃO funcionais.
+
+
+_Um bom inicio para os contribuidores é usar as recomendações do [PHP do Jeito Certo](http://br.phptherightway.com/)_
+
+
+Bases para a Refatoração
+-
 
 - PHP CodeSniffer PSR 2, para o estilo do código
 - PHPUnit, para desenvolvimento de testes
-- Composer, para atendimento das dependências
+- Composer, para gerenciamento de dependências
 - ApiGen, para geração da documentação
 
