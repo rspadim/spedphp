@@ -29,7 +29,7 @@ class NFePHP
 {
 
     // propriedades da classe
-    
+
     /**
     * raizDir
     * Diretorio raiz da API
@@ -202,7 +202,7 @@ class NFePHP
     /**
      * soapTimeout
      * Limite de tempo que o SOAP aguarda por uma conexão
-     * @var integer 0-indefinidamente ou numero de segundos 
+     * @var integer 0-indefinidamente ou numero de segundos
      */
     public $soapTimeout = 10;
     /**
@@ -213,7 +213,7 @@ class NFePHP
     protected $tpAmb='';
     /**
      * schemeVer
-     * String com o nome do subdiretorio onde se encontram os schemas 
+     * String com o nome do subdiretorio onde se encontram os schemas
      * atenção é case sensitive
      * @var string
      */
@@ -256,26 +256,26 @@ class NFePHP
     public $certDaysToExpire=0;
     /**
      * pfxTimeStamp
-     * Timestamp da validade do certificado A1 PKCS12 .pfx 
-     * @var timestamp  
+     * Timestamp da validade do certificado A1 PKCS12 .pfx
+     * @var timestamp
      */
     private $pfxTimestamp=0;
     /**
      * priKEY
      * Path completo para a chave privada em formato pem
-     * @var string 
+     * @var string
      */
     protected $priKEY='';
     /**
      * pubKEY
      * Path completo para a chave public em formato pem
-     * @var string 
+     * @var string
      */
     protected $pubKEY='';
     /**
      * certKEY
      * Path completo para o certificado (chave privada e publica) em formato pem
-     * @var string 
+     * @var string
      */
     protected $certKEY='';
     /**
@@ -355,14 +355,14 @@ class NFePHP
      * @var string
      */
     protected $debugMode=2;
-    
+
     /**
      * URLPortal
      * Instância do WebService
      * @var string
      */
     private $URLPortal='http://www.portalfiscal.inf.br/nfe';
-    
+
     /**
      * URLxsi
      * Instância do WebService
@@ -450,7 +450,7 @@ class NFePHP
                              'SP'=>'35',
                              'TO'=>'17',
                              'SVAN'=>'91');
-    
+
     /**
      * cUFlist
      * Lista dos numeros identificadores dos estados
@@ -517,12 +517,12 @@ class NFePHP
                               'SE'=>'America/Sao_Paulo',
                               'SP'=>'America/Sao_Paulo',
                               'TO'=>'America/Sao_Paulo');
-    
+
     /**
      * aMail
      * Matriz com os dados para envio de emails
      * FROM HOST USER PASS
-     * @var array 
+     * @var array
      */
     public $aMail='';
     /**
@@ -578,28 +578,28 @@ class NFePHP
     const STOP_MESSAGE  = 0; // apenas um aviso, o processamento continua
     const STOP_CONTINUE = 1; // questionamento ?, perecido com OK para continuar o processamento
     const STOP_CRITICAL = 2; // Erro critico, interrupção total
-    
+
     /**
      * __construct
      * Método construtor da classe
      * Este método utiliza o arquivo de configuração localizado no diretorio config
      * para montar os diretórios e várias propriedades internas da classe, permitindo
      * automatizar melhor o processo de comunicação com o SEFAZ.
-     * 
-     * Este metodo pode estabelecer as configurações a partir do arquivo config.php ou 
+     *
+     * Este metodo pode estabelecer as configurações a partir do arquivo config.php ou
      * através de um array passado na instanciação da classe.
-     * 
+     *
      * @param array $aConfig Opcional dados de configuração
      * @param number $mododebug Opcional 2-Não altera nenhum paraâmetro 1-SIM ou 0-NÃO (2 default)
      * @return  boolean true sucesso false Erro
      */
     public function __construct($aConfig = '', $mododebug = 2)
     {
-        
+
         $this->raizDir = dirname(__DIR__). DIRECTORY_SEPARATOR .  'NFePHP' . DIRECTORY_SEPARATOR;
         $this->certsDir = dirname(__DIR__). DIRECTORY_SEPARATOR .  'certs' . DIRECTORY_SEPARATOR;
         $this->imgDir = dirname(__DIR__). DIRECTORY_SEPARATOR .  'images' . DIRECTORY_SEPARATOR;
-        
+
         if (is_numeric($mododebug)) {
             $this->debugMode = $mododebug;
         }
@@ -641,7 +641,7 @@ class NFePHP
                 $this->aMail = array('mailFROM'=>$aConfig['mailFROM'],'mailHOST'=>$aConfig['mailHOST'],'mailUSER'=>$aConfig['mailUSER'],'mailPASS'=>$aConfig['mailPASS'],'mailPROTOCOL'=>$aConfig['mailPROTOCOL'],'mailFROMmail'=>$aConfig['mailFROMmail'],'mailFROMname'=>$aConfig['mailFROMname'],'mailREPLYTOmail'=>$aConfig['mailREPLYTOmail'],'mailREPLYTOname'=>$aConfig['mailREPLYTOname']);
             }
         } else {
-            
+
             //testa a existencia do arquivo de configuração
             if (is_file($this->raizDir.'config.php')) {
                 //carrega o arquivo de configuração
@@ -777,9 +777,9 @@ class NFePHP
             $this->tpAmb,
             $this->UF
         );
-        
+
         $pk = new \library\Pkcs12\Pkcs12Certs($this->certsDir, $this->certName, $this->keyPass, $this->cnpj, true);
-        
+
         //se houver erro no carregamento dos certificados passe para erro
         if (!$retorno = $pk->loadCerts()) {
             $msg = "Erro no carregamento dos certificados.";
@@ -816,8 +816,8 @@ class NFePHP
      * addProt
      * Este método adiciona a tag do protocolo a NFe, preparando a mesma
      * para impressão e envio ao destinatário.
-     * Também pode ser usada para substituir o protocolo de autorização 
-     * pelo protocolo de cancelamento, nesse caso apenas para a gestão interna 
+     * Também pode ser usada para substituir o protocolo de autorização
+     * pelo protocolo de cancelamento, nesse caso apenas para a gestão interna
      * na empresa, esse arquivo com o cancelamento não deve ser enviado ao cliente.
      *
      * @name addProt
@@ -980,11 +980,11 @@ class NFePHP
     /**
      * addB2B
      * Adiciona o xml referente a comunicação B2B à NFe, conforme padrão ANFAVEA+GS1
-     * 
+     *
      * @param string $nfefile path para o arquivo com a nfe protocolada e autorizada
      * @param string $b2bfile path para o arquivo xml padrão ANFAVEA+GS1 e NT2013_002
      * @param string $tagB2B Tag principar do xml B2B pode ser NFeB2B ou NFeB2BFin
-     * @return mixed FALSE se houve erro ou xml com a nfe+b2b  
+     * @return mixed FALSE se houve erro ou xml com a nfe+b2b
      */
     public function addB2B($nfefile = '', $b2bfile = '', $tagB2B = '')
     {
@@ -1068,7 +1068,7 @@ class NFePHP
      *        cStat = 108 sitema paralizado momentaneamente, aguardar retorno
      *        cStat = 109 sistema parado sem previsao de retorno, verificar status SCAN
      *        cStat = 113 SCAN operando mas irá parar use o serviço Normal
-     *        cStat = 114 SCAN dasativado pela SEFAZ de origem    
+     *        cStat = 114 SCAN dasativado pela SEFAZ de origem
      * se SCAN estiver ativado usar, caso contrario aguardar pacientemente.
      * @name soapStatusService
      * @param	string $UF sigla da unidade da Federação
@@ -1302,7 +1302,7 @@ class NFePHP
             }
             return false;
         }
-        
+
         if (isset($infCad)) {
             $aRetorno['bStat'] = true;
             //existem dados do cadastro e podem ser multiplos
@@ -1445,7 +1445,7 @@ class NFePHP
         return $aRetorno;
     }// fim sendLot
 
-   
+
     /**
      * getProtocol
      * Solicita resposta do lote de Notas Fiscais ou o protocolo de
@@ -1457,8 +1457,8 @@ class NFePHP
      * @param	string   $chave  numero da chave da NFe de 44 digitos
      * @param   string   $tpAmb  numero do ambiente 1-producao e 2-homologação
      * @param   integer  $modSOAP 1 usa nfeSOAP e 2 usa curlSOAP
-     * @param   array    $aRetorno Array com os dados do protocolo 
-     * @return	mixed    false ou xml 
+     * @param   array    $aRetorno Array com os dados do protocolo
+     * @return	mixed    false ou xml
      */
     public function soapGetProtocol($recibo = '', $chave = '', $tpAmb = '', $modSOAP = '2', &$aRetorno = '')
     {
@@ -1694,14 +1694,14 @@ class NFePHP
         }//fim catch
         return $aRetorno; //mudar para $retorno
     } //fim getProtocol
-    
+
     /**
      * getListNFe
-     * Consulta da Relação de Documentos Destinados 
+     * Consulta da Relação de Documentos Destinados
      * para um determinado CNPJ de destinatário informado na NF-e.
-     * 
+     *
      * Este serviço não suporta SCAN !!!
-     *  
+     *
      * @name getListNFe
      * @param boolean $AN TRUE - usa ambiente Nacional para buscar a lista de NFe, FALSE usa sua própria SEFAZ
      * @param string $indNFe Indicador de NF-e consultada: 0=Todas as NF-e; 1=Somente as NF-e que ainda não tiveram manifestação do destinatário (Desconhecimento da operação, Operação não Realizada ou Confirmação da Operação); 2=Idem anterior, incluindo as NF-e que também não tiveram a Ciência da Operação
@@ -1723,7 +1723,7 @@ class NFePHP
                 $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,$this->UF);
                 $sigla = $this->UF;
             } else {
-                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'AN');            
+                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'AN');
                 $sigla = 'AN';
             }
             if ($ultNSU == '') {
@@ -1858,24 +1858,24 @@ class NFePHP
         $resp = array('NFe'=>$aNFe,'Canc'=>$aCanc,'CCe'=>$aCCe);
         return $retorno;
     }//fim getListNFe
-    
+
     /**
      * getNFe
-     * Download da NF-e para uma determinada Chave de Acesso informada, 
-     * para as NF-e confirmadas pelo destinatário. As NFe baixadas serão salvas 
+     * Download da NF-e para uma determinada Chave de Acesso informada,
+     * para as NF-e confirmadas pelo destinatário. As NFe baixadas serão salvas
      * na pasta de recebidas
-     * 
+     *
      * ESSE SEVIÇO NÃO ESTÁ TOTALMENTE OPERACIONAL EXISTE APENAS NO SEFAZ DO RS E SVAN
-     * 
+     *
      * Este serviço não suporta SCAN !!
-     * 
+     *
      * @name getNFe
      * @param boolean $AN   true usa ambiente nacional, false usa o SEFAZ do emitente da NF
      * @param string $chNFe chave da NFe
      * @param string $tpAmb tipo de ambiente
      * @param string $modSOAP modo do SOAP
-     * @return mixed FALSE ou xml de retorno  
-     * 
+     * @return mixed FALSE ou xml de retorno
+     *
      * TODO: quando o serviço estiver funcional extrair o xml da NFe e colocar
      * no diretorio correto
      */
@@ -1890,7 +1890,7 @@ class NFePHP
                 $tpAmb = $this->tpAmb;
             }
             if ($AN) {
-                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'AN');            
+                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'AN');
             } else {
                 //deve se verificado se NFe emitidas em SCAN, com séries começando com 9
                 //podem ser obtidas no sefaz do emitente DUVIDA!!!
@@ -1996,7 +1996,7 @@ class NFePHP
     /**
      * Solicita inutilizaçao de uma serie de numeros de NF
      * - o processo de inutilização será gravado na pasta Inutilizadas
-     * 
+     *
      * @name inutNF
      * @param	string  $nAno       ano com 2 digitos
      * @param   string  $nSerie     serie da NF 1 até 3 digitos
@@ -2203,7 +2203,7 @@ class NFePHP
      * cancelEvent
      * Solicita o cancelamento de NFe autorizada
      * - O xml do evento de cancelamento será salvo na pasta Canceladas
-     *      
+     *
      * @name cancelEvent
      * @param string $chNFe
      * @param string $nProt
@@ -2403,7 +2403,7 @@ class NFePHP
         }
         return $procXML;
     } //fim cancEvent
-    
+
     /**
      * envCCe
      * Envia carta de correção da Nota Fiscal para a SEFAZ.
@@ -2412,12 +2412,12 @@ class NFePHP
      * @param   string $chNFe Chave da NFe
      * @param   string $xCorrecao Descrição da Correção entre 15 e 1000 caracteres
      * @param   string $nSeqEvento numero sequencial da correção d 1 até 20
-     *                             isso deve ser mantido na base de dados e 
-     *                             as correções consolidadas, isto é a cada nova correção 
+     *                             isso deve ser mantido na base de dados e
+     *                             as correções consolidadas, isto é a cada nova correção
      *                             devem ser inclusas as anteriores no texto.
-     *                             O Web Service não permite a duplicidade de numeração 
+     *                             O Web Service não permite a duplicidade de numeração
      *                             e nem controla a ordem crescente
-     * @param   integer $tpAmb Tipo de ambiente 
+     * @param   integer $tpAmb Tipo de ambiente
      * @param   integer $modSOAP 1 usa sendSOP e 2 usa curlSOAP
      * @return	mixed false ou xml com a CCe
      */
@@ -2435,7 +2435,7 @@ class NFePHP
             }
             //se o numero sequencial do evento não foi informado ou se for maior que 1 digito
             if ($nSeqEvento == '' || strlen($nSeqEvento) > 2 || !is_numeric($nSeqEvento)) {
-                $msg .= "Número sequencial da correção não encontrado ou é maior que 99 ou contêm caracteres não numéricos [$nSeqEvento]";            
+                $msg .= "Número sequencial da correção não encontrado ou é maior que 99 ou contêm caracteres não numéricos [$nSeqEvento]";
                 throw new NfephpException($msg);
             }
             if (strlen($xCorrecao) < 15 || strlen($xCorrecao) > 1000) {
@@ -2615,16 +2615,16 @@ class NFePHP
      *     210210 – Ciência da Operação
      *     210220 – Desconhecimento da Operação
      *     210240 – Operação não Realizada
-     * 
+     *
      * @name manifDest
      * @param   string $chNFe Chave da NFe
      * @param   string $tpEvento Tipo do evento pode conter 2 ou 6 digitos ex. 00 ou 210200
      * @param   string $xJust Justificativa quando tpEvento = 40 ou 210240
-     * @param   integer $tpAmb Tipo de ambiente 
+     * @param   integer $tpAmb Tipo de ambiente
      * @param   integer $modSOAP 1 usa sendSOP e 2 usa curlSOAP
      * @param   mixed  $resp variável passada como referencia e irá conter o retorno da função em um array
-     * @return	mixed false 
-     * 
+     * @return	mixed false
+     *
      * TODO : terminar o código não funcional e não testado
      */
     public function soapManifDest($chNFe = '', $tpEvento = '', $xJust = '', $tpAmb = '', $modSOAP = '2', &$resp = '')
@@ -2835,7 +2835,7 @@ class NFePHP
         }
         return $retorno;
     } //fim manifDest
-    
+
     /**
      * envDPEC
      * Apenas para teste não funcional
@@ -2859,7 +2859,7 @@ class NFePHP
                 $matriz[]=$aNFe;
             }
             $i = 0;
-            
+
             foreach ($matriz as $n) {
                 $errors = null;
                 $dom = null;
@@ -3153,7 +3153,7 @@ class NFePHP
      * getNumLot
      * Obtêm o numero do último lote de envio
      *
-     * @name getNumLot 
+     * @name getNumLot
      * @return numeric Numero do Lote
      */
     protected function getNumLot()
@@ -3192,11 +3192,11 @@ class NFePHP
         }
         return true;
     } //fim putNumLot
-    
+
     /**
      * getUltNSU
      * Pega o ultimo numero NSU gravado no arquivo numNSU.xml
-     * 
+     *
      * @name getUltNSU
      * @param type $sigla sigla do estado (UF)
      * @param type $tpAmb tipo de ambiente 1-produção ou 2 homologação
@@ -3233,10 +3233,10 @@ class NFePHP
     /**
      * putUltNSU
      * Grava o ultNSU fornecido pela SEFAZ
-     * 
+     *
      * @name putUltNSU
      * @param type $sigla sigla do estado (UF)
-     * @param type $tpAmb tipo de ambiente 
+     * @param type $tpAmb tipo de ambiente
      * @param type $ultNSU Valor retornado da consulta a SEFAZ
      * @return boolean true gravado ou false falha
      */
@@ -3270,13 +3270,13 @@ class NFePHP
         }
         return true;
     }//fim putUltNSU
-    
+
     /**
      * solveVersionErr
-     * Esta função corrige automaticamente todas as versões dos 
+     * Esta função corrige automaticamente todas as versões dos
      * webservices sempre que ocorrer o erro 238 ou 239
      * no retorno de qualquer requisição aos webservices
-     * 
+     *
      * @name solveVersionErr
      * @param string $xml xml retornado da SEFAZ
      * @param string $UF sigla do estado
@@ -3318,7 +3318,7 @@ class NFePHP
                 throw new NfephpException($msg, self::STOP_MESSAGE);
             }
             $cStat = !empty($doc->getElementsByTagName('cStat')->item(0)->nodeValue) ? $doc->getElementsByTagName('cStat')->item(0)->nodeValue : '';
-            $versao= !empty($doc->getElementsByTagName('versaoDados')->item(0)->nodeValue) ? $doc->getElementsByTagName('versaoDados')->item(0)->nodeValue : ''; 
+            $versao= !empty($doc->getElementsByTagName('versaoDados')->item(0)->nodeValue) ? $doc->getElementsByTagName('versaoDados')->item(0)->nodeValue : '';
             if (($cStat == '239' || $cStat == '238') && $versao != $versaodefault) {
                 //realmente as versões estão diferentes => corrigir
                 $nfews = $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile;
@@ -3350,43 +3350,43 @@ class NFePHP
     }//fim trata 239
 
     /**
-     * 
+     *
      */
     public function updateWsdl()
-    {        
+    {
         $wsFile = '../config/nfe_ws2.xml';
         $xml = file_get_contents($wsFile);
         //converte o xml em array
         $ws = XML2Array::createArray($xml);
         //para cada UF
-        foreach($ws['WS']['UF'] as $uf){
+        foreach($ws['WS']['UF'] as $uf) {
             $sigla = $uf['sigla'];
             $ambiente = array('homologacao','producao');
             //para cada ambiente
-            foreach($ambiente as $amb){
+            foreach($ambiente as $amb) {
                 $h = $uf[$amb];
-                if (isset($h)){
-                    foreach($h as $k => $j){
+                if (isset($h)) {
+                    foreach($h as $k => $j) {
                         $nome = $k;
                         $url=$j['@value'];
                         $metodo=$j['@attributes']['method'];
                         $versao = $j['@attributes']['version'];
-                        if ($url != ''){
+                        if ($url != '') {
                             $aS[] = $sigla;
                             $aA[] = $amb;
                             $aN[] = $nome;
                             $aU[] = $url.'?wsdl';
                             $aM[] = $metodo;
                             $aV[] = $versao;
-                        }    
+                        }
                     }
                 }
-            }   
+            }
         }
     }//fim downLoadWsdl
-    
+
     public function typeXml()
-    {        
+    {
         $xmlfile = file_get_contents($filename);
         $xml = simplexml_load_string($xmlfile);
         $tagroot = $xml->getName();
@@ -3407,7 +3407,7 @@ class NFePHP
                 //evento sem o protocolo
                 break;
             case 'envEvento':
-                //Envio de evento 
+                //Envio de evento
                 break;
             case 'retEnvEvento':
                 //Retorno de evento
@@ -3446,7 +3446,7 @@ class NFePHP
                 //consulta do status do serviço
                 break;
             case 'retConsStatServ':
-                //retorno da consulta do status do serviço 
+                //retorno da consulta do status do serviço
                 break;
         }
     }//fim tipo xml
@@ -3455,7 +3455,7 @@ class NFePHP
     {
         //pegar o elemento
         //pegar a versão
-        
+
         $aXSD = array(
             'cancNFe'=>'cancNFe_v',
             'CCe' => 'CCe_v',
@@ -3493,7 +3493,7 @@ class NFePHP
             '' => 'retEnviNFe_v',
             '' => 'retInutNFe_v'
         );
-          
-         
-    }        
+
+
+    }
 }

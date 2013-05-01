@@ -23,16 +23,16 @@
   <UF>
     <sigla>AN</sigla>
     <homologacao>
-      <RecepcaoEvento method='nfeRecepcaoEvento' version='1.00'>https://hom.nfe.fazenda.gov.br/RecepcaoEvento/RecepcaoEvento.asmx</RecepcaoEvento>            
+      <RecepcaoEvento method='nfeRecepcaoEvento' version='1.00'>https://hom.nfe.fazenda.gov.br/RecepcaoEvento/RecepcaoEvento.asmx</RecepcaoEvento>
       <NfeConsultaDest method='nfeConsultaNFDest' version='1.01'>https://hom.nfe.fazenda.gov.br/NFeConsultaDest/NFeConsultaDest.asmx</NfeConsultaDest>
       <NfeDownloadNF method='nfeDownloadNF' version='1.00'>https://hom.nfe.fazenda.gov.br/NfeDownloadNF/NfeDownloadNF.asmx</NfeDownloadNF>
     </homologacao>
     <producao>
-      <RecepcaoEvento method='nfeRecepcaoEvento' version='1.00'>https://www.nfe.fazenda.gov.br/RecepcaoEvento/RecepcaoEvento.asmx</RecepcaoEvento>            
+      <RecepcaoEvento method='nfeRecepcaoEvento' version='1.00'>https://www.nfe.fazenda.gov.br/RecepcaoEvento/RecepcaoEvento.asmx</RecepcaoEvento>
       <NfeConsultaDest method='nfeConsultaNFDest' version='1.01'>https://www.nfe.fazenda.gov.br/NFeConsultaDest/NFeConsultaDest.asmx</NfeConsultaDest>
       <NfeDownloadNF method='nfeDownloadNF' version='1.00'>https://www.nfe.fazenda.gov.br/NfeDownloadNF/NfeDownloadNF.asmx</NfeDownloadNF>
-    </producao>      
-  </UF>      
+    </producao>
+  </UF>
   <UF>
     <sigla>AM</sigla>
     <homologacao>
@@ -43,7 +43,7 @@
       <NfeConsulta method='nfeConsultaNF2' version='2.01'>https://homnfe.sefaz.am.gov.br/services2/services/NfeConsulta2</NfeConsulta>
       <NfeStatusServico method='nfeStatusServicoNF2' version='2.00'>https://homnfe.sefaz.am.gov.br/services2/services/NfeStatusServico2</NfeStatusServico>
       <CadConsultaCadastro method='consultaCadastro2' version='2.00'>https://homnfe.sefaz.am.gov.br/services2/services/cadconsultacadastro2</CadConsultaCadastro>
-      <RecepcaoEvento method='nfeRecepcaoEvento' version='1.00'>https://homnfe.sefaz.am.gov.br/services2/services/RecepcaoEvento</RecepcaoEvento>            
+      <RecepcaoEvento method='nfeRecepcaoEvento' version='1.00'>https://homnfe.sefaz.am.gov.br/services2/services/RecepcaoEvento</RecepcaoEvento>
       <NfeConsultaDest method='nfeConsultaNFDest' version='1.00'></NfeConsultaDest>
       <NfeDownloadNF method='nfeDownloadNF' version='1.00'></NfeDownloadNF>
     </homologacao>
@@ -117,12 +117,12 @@
   <UF>
     <sigla>ES</sigla>
     <homologacao>
-      <CadConsultaCadastro method='consultaCadastro2' version='2.00'>https://homologacao.sefaz.es.gov.br/ConsultaCadastroService/WSConsultaCadastro.asmx</CadConsultaCadastro>        
-    </homologacao>      
+      <CadConsultaCadastro method='consultaCadastro2' version='2.00'>https://homologacao.sefaz.es.gov.br/ConsultaCadastroService/WSConsultaCadastro.asmx</CadConsultaCadastro>
+    </homologacao>
     <producao>
       <CadConsultaCadastro method='consultaCadastro2' version='2.00'>https://app.sefaz.es.gov.br/ConsultaCadastroService/WSConsultaCadastro.asmx</CadConsultaCadastro>
-    </producao>    
-  </UF>    
+    </producao>
+  </UF>
   <UF>
     <sigla>GO</sigla>
     <homologacao>
@@ -289,7 +289,7 @@
     <sigla>RN</sigla>
     <homologacao>
       <CadConsultaCadastro method='consultaCadastro2' version='2.00'>https://webservice.set.rn.gov.br/projetonfehomolog/set_nfe/servicos/CadConsultaCadastroWS.asmx</CadConsultaCadastro>
-    </homologacao>  
+    </homologacao>
     <producao>
       <CadConsultaCadastro method='consultaCadastro2' version='2.00'>https://webservice.set.rn.gov.br/projetonfeprod/set_nfe/servicos/CadConsultaCadastroWS.asmx</CadConsultaCadastro>
     </producao>
@@ -443,7 +443,7 @@
     <homologacao>
       <SCERecepcaoRFB method='sceRecepcaoDPEC' version='1.01'>https://hom.nfe.fazenda.gov.br/SCERecepcaoRFB/SCERecepcaoRFB.asmx</SCERecepcaoRFB>
       <SCEConsultaRFB method='sceConsultaDPEC' version='1.01'>https://hom.nfe.fazenda.gov.br/SCEConsultaRFB/SCEConsultaRFB.asmx</SCEConsultaRFB>
-    </homologacao>    
+    </homologacao>
     <producao>
       <SCERecepcaoRFB method='sceRecepcaoDPEC' version='1.01'>https://www.nfe.fazenda.gov.br/SCERecepcaoRFB/SCERecepcaoRFB.asmx</SCERecepcaoRFB>
       <SCEConsultaRFB method='sceConsultaDPEC' version='1.01'>https://www.nfe.fazenda.gov.br/SCEConsultaRFB/SCEConsultaRFB.asmx</SCEConsultaRFB>
