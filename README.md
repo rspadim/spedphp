@@ -8,7 +8,7 @@ Este é o repositorio para o desenvolvimento e refatoração da API NFePHP.
 > Códigos em desenvolvimento não usar, estão INCOMPLETOS e NÃO funcionais.
 
 
-_Um bom inicio para os contribuidores é usar as recomendações do [PHP do Jeito Certo](http://br.phptherightway.com/{:target="_blank"})_
+_Um bom inicio para os contribuidores é usar as recomendações do [PHP do Jeito Certo](http://br.phptherightway.com/)_
 
 
 #Bases para a Refatoração
