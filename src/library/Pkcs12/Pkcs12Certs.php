@@ -549,7 +549,7 @@ class Pkcs12Certs
      * @param type $context_especific
      * @return type
      */
-    public function parseASN($data, $context_especific = false)
+    protected static function parseASN($data, $context_especific = false)
     {
         // Tabela de OIDs .
         $_oids = array(
@@ -1428,10 +1428,10 @@ class Pkcs12Certs
                     // Sequence
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $sequence_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
-                    $values = $this->parseASN($sequence_data);
+                    $values = self::parseASN($sequence_data);
                     if (!is_array($values) || is_string($values[0])) {
                         $values = array($values);
                     }
@@ -1443,12 +1443,12 @@ class Pkcs12Certs
                     // Set of
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $sequence_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
                         'set (' . $len . ')',
-                        $this->parseASN($sequence_data));
+                        self::parseASN($sequence_data));
                     break;
                 case 0x01:
                     // Boolean type
@@ -1462,7 +1462,7 @@ class Pkcs12Certs
                     // Integer type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $integer_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     if ($len == 16) {
@@ -1495,7 +1495,7 @@ class Pkcs12Certs
                     // Bitstring type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $bitstring_data = substr($data, 2+BYTES, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1506,7 +1506,7 @@ class Pkcs12Certs
                     // Octetstring type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $octectstring_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     if ($context_especific) {
@@ -1516,14 +1516,14 @@ class Pkcs12Certs
                     } else {
                         $result[] = array(
                             'octet string ('.$len.')',
-                            $this->parseASN($octectstring_data));
+                            self::parseASN($octectstring_data));
                     }
                     break;
                 case 0x0C:
                     // UTF8 STRING
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $octectstring_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     if ($context_especific) {
@@ -1533,7 +1533,7 @@ class Pkcs12Certs
                     } else {
                         $result[] = array(
                             'utf8 string ('.$len.')',
-                            $this->parseASN($octectstring_data));
+                            self::parseASN($octectstring_data));
                     }
                     break;
                 case 0x05:
@@ -1545,7 +1545,7 @@ class Pkcs12Certs
                     // Object identifier type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $oid_data = substr($data, 2 + $bytes, $len);
                     $x_len = $data[1];
                     $data = substr($data, 2 + $bytes + $len);
@@ -1577,7 +1577,7 @@ class Pkcs12Certs
                     // Character string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1591,7 +1591,7 @@ class Pkcs12Certs
                     // Character string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1607,7 +1607,7 @@ class Pkcs12Certs
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
                         'string (' . $len . ')',
-                        $this->printHex($string_data));
+                        self::printHex($string_data));
                     break;
                 case 0x13:
                 case 0x86:
@@ -1641,7 +1641,7 @@ class Pkcs12Certs
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
                         'extension : X509v3 extensions ('.$len.')',
-                        array($this->parseASN($sequence_data)));
+                        array(self::parseASN($sequence_data)));
                     break;
                 case 0xa0:
                     // Extensions
@@ -1652,7 +1652,7 @@ class Pkcs12Certs
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
                         'Context Especific (' . $len . ')',
-                        array($this->parseASN($extension_data, true)));
+                        array(self::parseASN($extension_data, true)));
                     break;
                 case 0xa3:
                     // Extensions
@@ -1663,7 +1663,7 @@ class Pkcs12Certs
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
                         'extension (0xA3)  (' . $len . ')',
-                        array($this->parseASN($extension_data)));
+                        array(self::parseASN($extension_data)));
                     break;
                 case 0xe6:
                     $extension_data = substr($data, 0, 1);
@@ -1695,7 +1695,7 @@ class Pkcs12Certs
      * @param type $value
      * @return string
      */
-    public function printHex($value)
+    protected static function printHex($value)
     {
         $tab_val = array('0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F');
         for ($i=0; $i<strlen($value); $i++) {
@@ -1714,7 +1714,7 @@ class Pkcs12Certs
      * @param numeric $bytes
      * @param string $data
      */
-    public function getLength($len, $bytes, $data)
+    protected static function getLength($len, $bytes, $data)
     {
         $len = ord($data[1]);
         $bytes = 0;
@@ -1743,7 +1743,7 @@ class Pkcs12Certs
      * @param type $pem_data
      * @return type
      */
-    public function pem2Der($pem_data)
+    protected static function pem2Der($pem_data)
     {
         $begin = "CERTIFICATE-----";
         $end = "-----END";
@@ -1761,12 +1761,12 @@ class Pkcs12Certs
      * @param type $oid_number
      * @return type
      */
-    public function getOIDdata($cert_der, $oid_number)
+    protected static function getOIDdata($cert_der, $oid_number)
     {
         // Esta função assume que a oid esta inserida dentro de uma estrutura do
         // tipo "sequencia", como primeiro elemento da estrutura...
         // converte oid de texto para hexadecimal
-        $oid_hexa = $this->oidtoHex($oid);
+        $oid_hexa = self::oidtoHex($oid);
         // Faz o split pela oid...
         $partes = explode($oid_hexa, $cert_der);
         $ret = array();
@@ -1794,17 +1794,17 @@ class Pkcs12Certs
                 $len = ord($data[1]);
                 $bytes = 0;
                 // obtem tamanho da parte de dados da oid.
-                $this->get_length(&$len, &$bytes, $data);
+                self::get_length(&$len, &$bytes, $data);
                 // Obtem porcao de bytes pertencentes a oid.
                 $oid_data = substr($data, 2 + $bytes, $len);
                 // parse dos dados da oid.
-                $ret[] =  $this->parseASN($oid_data);
+                $ret[] =  self::parseASN($oid_data);
             }
         }
         return $ret;
     }//fim getOIDdata
     
-    public function oidtoHex($oid)
+    protected static function oidtoHex($oid)
     {
         $abBinary = array();
         $partes = explode('.', $oid);
@@ -1817,7 +1817,7 @@ class Pkcs12Certs
                 $b +=  $partes[$n];
                 $abBinary[] = $b;
             } else {
-                $abBinary = $this->xBase128($abBinary, $partes[$n], 1);
+                $abBinary = self::xBase128($abBinary, $partes[$n], 1);
             }
         }
         $value =chr(0x06) . chr(count($abBinary));
@@ -1827,11 +1827,11 @@ class Pkcs12Certs
         return $value;
     }//fim oidtoHex
 
-    public function xBase128($ab, $q, $flag)
+    protected static function xBase128($ab, $q, $flag)
     {
         $abc = $ab;
         if ($q > 127) {
-            $abc = $this->xBase128($abc, floor($q/128), 0);
+            $abc = self::xBase128($abc, floor($q/128), 0);
         }
         $q = $q % 128;
         if ($flag) {
@@ -1841,4 +1841,18 @@ class Pkcs12Certs
         }
         return $abc;
     }//fim xBase128
+    
+    /**
+     * getCNPJCert
+     * Obtem o CNPJ do certificado digital
+     * @param string $cert_pem conteudo do certificado 
+     * @return string CNPJ
+     */
+    public function getCNPJCert($cert_pem)
+    {
+        
+        $der = self::pem2Der($cert_pem);
+        $data = self::getOIDdata($der, '2.16.76.1.3.3');
+        return $data[0][1][1][0][1];
+    }//fim getCNPJCert
 }//fim da classe
