@@ -1602,7 +1602,7 @@ class Pkcs12Certs
                     // Character string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1614,7 +1614,7 @@ class Pkcs12Certs
                     // Printable string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::getLength(&$len, &$bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1625,7 +1625,7 @@ class Pkcs12Certs
                     // Time types
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::get_length(&$len, &$bytes, $data);
                     $time_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1636,7 +1636,7 @@ class Pkcs12Certs
                     // X509v3 extensions?
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::get_length(&$len, &$bytes, $data);
                     $sequence_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1647,7 +1647,7 @@ class Pkcs12Certs
                     // Extensions
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::get_length(&$len, &$bytes, $data);
                     $extension_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1658,7 +1658,7 @@ class Pkcs12Certs
                     // Extensions
                     $len = ord($data[1]);
                     $bytes = 0;
-                    $this->getLength(&$len, &$bytes, $data);
+                    self::get_length(&$len, &$bytes, $data);
                     $extension_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
