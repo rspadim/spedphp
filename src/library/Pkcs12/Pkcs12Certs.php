@@ -1428,7 +1428,7 @@ class Pkcs12Certs
                     // Sequence
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $sequence_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $values = self::parseASN($sequence_data);
@@ -1443,7 +1443,7 @@ class Pkcs12Certs
                     // Set of
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $sequence_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1462,7 +1462,7 @@ class Pkcs12Certs
                     // Integer type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $integer_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     if ($len == 16) {
@@ -1495,7 +1495,7 @@ class Pkcs12Certs
                     // Bitstring type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $bitstring_data = substr($data, 2+BYTES, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1506,7 +1506,7 @@ class Pkcs12Certs
                     // Octetstring type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $octectstring_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     if ($context_especific) {
@@ -1523,7 +1523,7 @@ class Pkcs12Certs
                     // UTF8 STRING
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $octectstring_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     if ($context_especific) {
@@ -1545,7 +1545,7 @@ class Pkcs12Certs
                     // Object identifier type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $oid_data = substr($data, 2 + $bytes, $len);
                     $x_len = $data[1];
                     $data = substr($data, 2 + $bytes + $len);
@@ -1577,7 +1577,7 @@ class Pkcs12Certs
                     // Character string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1591,7 +1591,7 @@ class Pkcs12Certs
                     // Character string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1602,7 +1602,7 @@ class Pkcs12Certs
                     // Character string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1614,7 +1614,7 @@ class Pkcs12Certs
                     // Printable string type
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::getLength(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $string_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1625,7 +1625,7 @@ class Pkcs12Certs
                     // Time types
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::get_length(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $time_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1636,7 +1636,7 @@ class Pkcs12Certs
                     // X509v3 extensions?
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::get_length(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $sequence_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1647,7 +1647,7 @@ class Pkcs12Certs
                     // Extensions
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::get_length(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $extension_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1658,7 +1658,7 @@ class Pkcs12Certs
                     // Extensions
                     $len = ord($data[1]);
                     $bytes = 0;
-                    self::get_length(&$len, &$bytes, $data);
+                    self::getLength($len, $bytes, $data);
                     $extension_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
@@ -1714,7 +1714,7 @@ class Pkcs12Certs
      * @param numeric $bytes
      * @param string $data
      */
-    protected static function getLength($len, $bytes, $data)
+    protected static function getLength(&$len, &$bytes, $data)
     {
         $len = ord($data[1]);
         $bytes = 0;
@@ -1766,7 +1766,7 @@ class Pkcs12Certs
         // Esta função assume que a oid esta inserida dentro de uma estrutura do
         // tipo "sequencia", como primeiro elemento da estrutura...
         // converte oid de texto para hexadecimal
-        $oid_hexa = self::oidtoHex($oid);
+        $oid_hexa = self::oidtoHex($oid_number);
         // Faz o split pela oid...
         $partes = explode($oid_hexa, $cert_der);
         $ret = array();
@@ -1794,7 +1794,7 @@ class Pkcs12Certs
                 $len = ord($data[1]);
                 $bytes = 0;
                 // obtem tamanho da parte de dados da oid.
-                self::get_length(&$len, &$bytes, $data);
+                self::getLength($len, $bytes, $data);
                 // Obtem porcao de bytes pertencentes a oid.
                 $oid_data = substr($data, 2 + $bytes, $len);
                 // parse dos dados da oid.

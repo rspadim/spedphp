@@ -22,7 +22,7 @@ namespace library\Exception;
  * @name nfephpException
  * 
  */
-class NfephpException extends Exception
+class NfephpException extends \Exception
 {
     
     public function __construct($message = null, $code = 0)
