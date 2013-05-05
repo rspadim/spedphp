@@ -11,7 +11,7 @@
 
 namespace library\Aux;
 
-use library\Exception\NfephpException;
+use library\Exception;
 
 /**
  * 
@@ -51,7 +51,7 @@ class AuxClass
                 $diretorio = getcwd().DIRECTORY_SEPARATOR;
                 if (strtolower($dir) != strtolower($diretorio)) {
                     $msg = "Falha! sem permissão de leitura no diretorio escolhido.";
-                    throw new NfephpException($msg);
+                    throw new Exception\NfephpException($msg);
                 }
                 //abra o diretório
                 $ponteiro  = opendir($diretorio);
