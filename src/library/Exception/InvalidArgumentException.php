@@ -1,21 +1,22 @@
 <?php
-/**
- * Zend Framework (http://framework.zend.com/)
+/*
+ * NFePHP (http://www.nfephp.org/)
  *
- * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Pdf
+ * @link      http://github.com/nfephp-org/nfephp for the canonical source repository
+ * @copyright Copyright (c) 2008-2013 NFePHP (http://www.nfephp.org)
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL v.3
+ * @package   NFePHP
  */
 
 namespace library\Exception;
 
 /**
- * Exception class for Zend\Pdf.
+ * Exception class for NFePHP
  *
- * @category  Zend
- * @package    Zend_PDF
- * @subpackage Zend_PDF_Exception
+ * @category   NFePHP
+ * @package    NFePHP
+ * @subpackage NFePHP_Exception
  */
 class InvalidArgumentException extends \InvalidArgumentException implements
     ExceptionInterface
