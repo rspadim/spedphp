@@ -12,7 +12,7 @@
 
 namespace library\Pkcs12;
 
-use library\Exception\NfephpException;
+use library\Exception;
 
 class Pkcs12Certs
 {
@@ -27,6 +27,7 @@ class Pkcs12Certs
     public $certMonthsToExpire;
     public $certDaysToExpire;
     public $pfxTimestamp;
+    public $errorMsg = '';
 
     //constantes utilizadas na assinatura digital do xml
     const URLDSIG = 'http://www.w3.org/2000/09/xmldsig#';
@@ -52,19 +53,19 @@ class Pkcs12Certs
         try {
             if ($certsDir == '') {
                 $msg = "O caminho para os arquivos dos certificados deve ser passado!!";
-                throw new NfephpException($msg);
+                throw new Exception\NfephpException($msg);
             }
             if ($pfxName == '') {
                 $msg = "O nome do certificado .pfx deve ser passado!!";
-                throw new NfephpException($msg);
+                throw new Exception\NfephpException($msg);
             }
             if ($keyPass == '') {
                 $msg = "A senha do certificado .pfx deve ser passado!!";
-                throw new NfephpException($msg);
+                throw new Exception\NfephpException($msg);
             }
             if ($cnpj == '') {
                 $msg = "O numero do CNPJ do certificado deve ser passado!!";
-                throw new NfephpException($msg);
+                throw new Exception\NfephpException($msg);
             }
             //limpar bobagens
             $certsDir = trim($certsDir);
@@ -77,17 +78,17 @@ class Pkcs12Certs
             }
             if (!file_exists($certsDir . $pfxName)) {
                 $msg = "O arquivo do certificado pfx não foi encontrado!!";
-                throw new NfephpException($msg);
+                throw new Exception\NfephpException($msg);
             }
             $this->certsDir = $certsDir;
             $this->pfxName = $pfxName;
             $this->keyPass = $keyPass;
             $this->cnpj = $cnpj;
-        } catch (NfephpException $e) {
-            throw $e;
-            return false;
+        } catch (Exception\NfephpException $e) {
+            $this->errorMsg = ($e->getMessage());
+            //return false;
         }
-        return true;
+        //return true;
     }//fim __construct
     
     /**
