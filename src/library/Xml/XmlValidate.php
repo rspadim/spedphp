@@ -1,13 +1,19 @@
 <?php
 
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * NFePHP (http://www.nfephp.org/)
+ *
+ * @link      http://github.com/nfephp-org/nfephp for the canonical source repository
+ * @copyright Copyright (c) 2008-2013 NFePHP (http://www.nfephp.org)
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL v.3
+ * @package   NFePHP
  */
+
 
 namespace library\Xml;
 
-use library\Exception\NfephpException;
+use library\Exception;
 
 class XmlValidate
 {
@@ -42,7 +48,7 @@ class XmlValidate
             //verifica se foi passado o xml
             if (strlen($xml)==0) {
                 $msg = 'Você deve passar o conteudo do xml como parâmetro ou o caminho completo até o arquivo.';
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             // instancia novo objeto DOM
             $dom = new DOMDocument('1.0', 'utf-8');
@@ -59,7 +65,7 @@ class XmlValidate
             if (!empty($errors)) {
                 //o dado passado como $docXml não é um xml
                 $msg = 'O dado informado não é um XML ou não foi encontrado.';
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             //limpa erros anteriores
             libxml_clear_errors();
@@ -138,12 +144,11 @@ class XmlValidate
                 $flagOK = true;
             }
             if (!$flagOK) {
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
-        } catch (NfephpException $e) {
+        } catch (library\NfephpException $e) {
             $this->aError[] = $e->getMessage();
             $aError[] = $e->getMessage();
-            throw $e;
             return false;
         }
         return true;

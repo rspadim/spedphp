@@ -44,9 +44,7 @@ class Pkcs12Certs
      * @param string $pfxName   Nome do arquivo pfrx colocado no diretório acima indicado
      * @param string $keyPass   Senha para acesso aos dados do certificado digital
      * @param string $cnpj      CNPJ do proprietário do certificado
-     * @return boolean          True em caso de sucesso ou false em caso de erro  
-     * @throws \library\Exception\NfephpException
-     * @throws NfephpException
+     * @throws Exception\NfephpException
      */
     public function __construct($certsDir = '', $pfxName = '', $keyPass = '', $cnpj = '')
     {
@@ -136,27 +134,27 @@ class Pkcs12Certs
             //o path foram carregados nas variaveis da classe
             if ($this->certsDir == '' || $this->pfxName == '') {
                 $msg = "Um certificado deve ser passado para a classe pelo arquivo de configuração!! ";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             //monta o caminho completo até o certificado pfx
             $pfxCert = $this->certsDir.$this->pfxName;
             //verifica se o arquivo existe
             if (!file_exists($pfxCert)) {
                 $msg = "Certificado não encontrado!! $pfxCert";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             //carrega o certificado em um string
             $pfxContent = file_get_contents($pfxCert);
             //carrega os certificados e chaves para um array denominado $x509certdata
             if (!openssl_pkcs12_read($pfxContent, $x509certdata, $this->keyPass)) {
                 $msg = "O certificado não pode ser lido!! Provavelmente corrompido ou com formato inválido!!";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             if ($testaVal) {
                 //verifica sua validade
                 if (!$aResp = $this->validCerts($x509certdata['cert'])) {
                     $msg = "Certificado invalido!! - " . $aResp['error'];
-                    throw new NfephpException($msg);
+                    throw new library\NfephpException($msg);
                 }
             }
             //aqui verifica se existem as chaves em formato PEM
@@ -215,14 +213,12 @@ class Pkcs12Certs
                 //recriar os arquivos pem com o arquivo pfx
                 if (!file_put_contents($this->priKEY, $x509certdata['pkey'])) {
                     $msg = "Impossivel gravar no diretório!!! Permissão negada!!";
-                    throw new NfephpException($msg);
+                    throw new library\NfephpException($msg);
                 }
                 $n = file_put_contents($this->pubKEY, $x509certdata['cert']);
                 $n = file_put_contents($this->certKEY, $x509certdata['pkey']."\r\n".$x509certdata['cert']);
             }
-        } catch (NfephpException $e) {
-            $this->setError($e->getMessage());
-            throw $e;
+        } catch (library\NfephpException $e) {
             return false;
         }
         return true;
@@ -248,11 +244,11 @@ class Pkcs12Certs
         try {
             if ($cert == '') {
                 $msg = "O certificado é um parâmetro obrigatorio.";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             if (!$data = openssl_x509_read($cert)) {
                 $msg = "O certificado não pode ser lido pelo SSL - $cert .";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             $flagOK = true;
             $errorMsg = "";
@@ -287,8 +283,7 @@ class Pkcs12Certs
             $this->certDaysToExpire = $daysToExpire;
             $this->pfxTimestamp = $dValid;
             $aRetorno = array('status'=>$flagOK,'error'=>$errorMsg,'meses'=>$monthsToExpire,'dias'=>$daysToExpire);
-        } catch (NfephpException $e) {
-            throw $e;
+        } catch (library\NfephpException $e) {
             return false;
         }
         return true;
@@ -311,7 +306,7 @@ class Pkcs12Certs
             //carregar a chave publica do arquivo pem
             if (!$pubKey = file_get_contents($certFile)) {
                 $msg = "Arquivo não encontrado - $certFile .";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             //carrega o certificado em um array usando o LF como referencia
             $arCert = explode("\n", $pubKey);
@@ -322,8 +317,7 @@ class Pkcs12Certs
                     $data .= trim($curData);
                 }
             }
-        } catch (NfephpException $e) {
-            throw $e;
+        } catch (library\NfephpException $e) {
             return false;
         }
         return $data;
@@ -347,11 +341,11 @@ class Pkcs12Certs
         try {
             if ($tagid == '') {
                 $msg = "Uma tag deve ser indicada para que seja assinada!!";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             if ($docxml == '') {
                 $msg = "Um xml deve ser passado para que seja assinado!!";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             if (is_file($docxml)) {
                 $xml = file_get_contents($docxml);
@@ -390,13 +384,13 @@ class Pkcs12Certs
                     }
                     libxml_clear_errors();
                 }
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             //extrair a tag com os dados a serem assinados
             $node = $xmldoc->getElementsByTagName($tagid)->item(0);
             if (!isset($node)) {
                 $msg = "A tag < $tagid > não existe no XML!!";
-                throw new NfephpException($msg);
+                throw new library\NfephpException($msg);
             }
             $id = trim($node->getAttribute("Id"));
             $idnome = preg_replace('/[^0-9]/', '', $id);
@@ -467,8 +461,7 @@ class Pkcs12Certs
             $xml = $xmldoc->saveXML();
             // libera a memoria
             openssl_free_key($pkeyid);
-        } catch (NfephpException $e) {
-            throw $e;
+        } catch (library\NfephpException $e) {
             return false;
         }
         //retorna o documento assinado
@@ -536,9 +529,7 @@ class Pkcs12Certs
                 $err = $msg;
                 return false;
             }
-        } catch (NfephpException $e) {
-            //$this->setError($e->getMessage());
-            throw $e;
+        } catch (library\NfephpException $e) {
             return false;
         }
         return true;
@@ -1497,7 +1488,7 @@ class Pkcs12Certs
                     $len = ord($data[1]);
                     $bytes = 0;
                     self::getLength($len, $bytes, $data);
-                    $bitstring_data = substr($data, 2+BYTES, $len);
+                    $bitstring_data = substr($data, 2 + $bytes, $len);
                     $data = substr($data, 2 + $bytes + $len);
                     $result[] = array(
                         'bit string ('.$len.')',
@@ -1693,7 +1684,8 @@ class Pkcs12Certs
     /**
      * printHex
      * Retorna o valor em caracteres hexadecimais
-     * @param type $value
+     * 
+     * @param strint $value 
      * @return string
      */
     protected static function printHex($value)
@@ -1711,18 +1703,20 @@ class Pkcs12Certs
 
     /**
      * getLength
-     * @param numeric $len
-     * @param numeric $bytes
-     * @param string $data
+     * Obtem o comprimento do conteúdo de uma sequencia de dados do certificado
+     * 
+     * @param numeric $len variável passada por referência
+     * @param numeric $bytes variável passada por referência
+     * @param string $data campo a 
      */
     protected static function getLength(&$len, &$bytes, $data)
     {
         $len = ord($data[1]);
         $bytes = 0;
         // Testa se tamanho menor/igual a 127 bytes,
-        // se for $len já é o tamanho do conteúdo
+        // se for, então $len já é o tamanho do conteúdo
         if ($len & 0x80) {
-            // Testa se tamanho indefinido (nao deve ocorrer em uma codificação DER.
+            // Testa se tamanho indefinido (nao deve ocorrer em uma codificação DER)
             if ($len == chr(0x80)) {
                 // Tamanho indefinido, limitado por 0x0000h
                 $len = strpos($data, chr(0x00).chr(0x00));
@@ -1740,7 +1734,8 @@ class Pkcs12Certs
 
     /**
      * pem2Der
-     * Transforma o certificado do formato PEM para o formato DER ...
+     * Transforma o certificado do formato PEM para o formato DER
+     * 
      * @param type $pem_data
      * @return type
      */
@@ -1748,8 +1743,10 @@ class Pkcs12Certs
     {
         $begin = "CERTIFICATE-----";
         $end = "-----END";
-        $pem_data = substr($pem_data, strpos($pem_data, $begin)+strlen($begin));
+        //extrai o conteudo do certificado entre as marcas BEGIN e END
+        $pem_data = substr($pem_data, strpos($pem_data, $begin) + strlen($begin));
         $pem_data = substr($pem_data, 0, strpos($pem_data, $end));
+        //converte para binário
         $der = base64_decode($pem_data);
         return $der;
     }//fim pem2Der
@@ -1757,60 +1754,85 @@ class Pkcs12Certs
     
     /**
      * getOIDdata
-     * Recupera a informação referente ao OID
+     * Recupera a informação referente ao OID contido no certificado
+     * Este método assume que a OID está inserida dentro de uma estrutura do
+     * tipo "sequencia", como primeiro elemento da estrutura
+     * 
      * @param type $cert_der
      * @param type $oid_number
      * @return type
      */
     protected static function getOIDdata($cert_der, $oid_number)
     {
-        // Esta função assume que a oid esta inserida dentro de uma estrutura do
-        // tipo "sequencia", como primeiro elemento da estrutura...
-        // converte oid de texto para hexadecimal
+        //converte onumero OTD de texto para hexadecimal
         $oid_hexa = self::oidtoHex($oid_number);
-        // Faz o split pela oid...
+        //Divide o certificado usando a OID como marcador,uma antes do OID e outra contendo o OID. 
+        //Normalmente o certificado será dividido em duas partes, pois em geral existe
+        //apenas um OID de cada tipo no certificado, mas podem haver mais. 
         $partes = explode($oid_hexa, $cert_der);
         $ret = array();
+        //se count($partes) > 1 então o OID foi localizado no certificado
         if (count($partes)>1) {
+            //O inicio da sequencia que nos interessa pode estar a 3 ou 2 digitos 
+            //antes do inicio da OID, isso depende do numero de bytes usados para 
+            //identificar o tamanho da sequencia
             for ($i=1; $i<count($partes); $i++) {
-                //O inicio da seq pode estar a 3 ou 2 digitos antes do inicio da oid
-                //.... depende do numero de bytes usados para  tamanho da seq.
-                // recupera da primeira parte os 4 ultimos digitos...
+                //recupera da primeira parte os 4 últimos digitos na parte sem o OID
                 $xcv4 = substr($partes[$i-1], strlen($partes[$i-1])-4, 4);
-                // recupera da primeira parte os 3 ultimos digitos...
+                //recupera da primeira parte os 3 ultimos digitos na parte sem o OID
                 $xcv3 = substr($partes[$i-1], strlen($partes[$i-1])-3, 3);
-                // recupera da primeira parte os 2 ultimos digitos...
+                //recupera da primeira parte os 2 ultimos digitos na parte em o OID
                 $xcv2 = substr($partes[$i-1], strlen($partes[$i-1])-2, 2);
+                //verifica se o primeiro digito é Hex 030
                 if ($xcv4[0] == chr(0x30)) {
+                    //se for, então tamanho é definido por esses 4 bytes
                     $xcv = $xcv4;
                 } else {
+                    //se for, então tamanho é definido por esses 3 bytes
                     if ($xcv3[0] == chr(0x30)) {
                         $xcv = $xcv3;
                     } else {
+                        //então tamanho é definido por esses 2 bytes
                         $xcv = $xcv2;
                     }
                 }
-                // reconstroi a sequencia...
+                //reconstroi a sequencia, marca do tamanho do campo, OID e 
+                //a parte do certificado com o OID 
                 $data = $xcv . $oid_hexa . $partes[$i];
+                //converte para decimal, o segundo digito da sequencia
                 $len = ord($data[1]);
                 $bytes = 0;
-                // obtem tamanho da parte de dados da oid.
+                // obtem tamanho da parte de dados da oid
                 self::getLength($len, $bytes, $data);
-                // Obtem porcao de bytes pertencentes a oid.
+                // Obtem o conjunto de bytes pertencentes a oid
                 $oid_data = substr($data, 2 + $bytes, $len);
-                // parse dos dados da oid.
+                //parse dos dados da oid
                 $ret[] =  self::parseASN($oid_data);
             }
         }
         return $ret;
     }//fim getOIDdata
     
+    
+    /**
+     * oidtoHex
+     * Converte o numero de identificação do OID em uma representação asc,
+     * coerente com o formato do certificado
+     * 
+     * @param string $oid numero OID (com os pontos de separação)
+     * @return string sequencia em hexadecimal 
+     */
     protected static function oidtoHex($oid)
     {
+        if ($oid == '') {
+            return '';
+        }
         $abBinary = array();
+        //coloca cada parte do numero do OID em uma linha da matriz
         $partes = explode('.', $oid);
         $n = 0;
         $b = 0;
+        //para cada numero compor o valor asc do mesmo
         for ($n = 0; $n < count($partes); $n++) {
             if ($n==0) {
                 $b = 40 * $partes[$n];
@@ -1822,12 +1844,22 @@ class Pkcs12Certs
             }
         }
         $value =chr(0x06) . chr(count($abBinary));
+        //para cada item da matriz compor a string de retorno como caracter
         foreach ($abBinary as $item) {
             $value .= chr($item);
         }
         return $value;
     }//fim oidtoHex
 
+    
+    /**
+     * xBase128
+     * 
+     * @param numeric $ab
+     * @param numeric $q 
+     * @param numeric $flag
+     * @return numeric
+     */
     protected static function xBase128($ab, $q, $flag)
     {
         $abc = $ab;
