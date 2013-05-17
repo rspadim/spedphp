@@ -1,0 +1,36 @@
+A Capa de Lote Eletrônica (CL-e) é um documento auxiliar criado para agilizar o registro e liberação de mercadorias acobertadas por documentos fiscais eletrônicos nos Postos Fiscais do país.
+
+A CL-e agrega a identificação do transportador, unidade de carga, UF de destino da carga e todas as chaves de acesso dos documentos fiscais eletrônicos que acobertam as mercadorias.
+
+A CL-e possui um código de barras impresso, cuja leitura no Posto Fiscal permite o registro e liberação em lote de todos os documentos fiscais eletrônicos referentes a uma unidade de carga.
+
+A não utilização da CL-e implica a necessidade de registro de cada DANFE, de forma individual no Posto Fiscal, podendo retardar a liberação da carga.
+
+ UTILIZAÇÃO
+
+No primeiro estágio de implantação a CL-e funcionará como um “Manifesto de Carga” simplificado, exclusivo para documentos fiscais eletrônicos e de emissão voluntária pelo contribuinte.
+
+A CL-e não dispensa o cumprimento de qualquer obrigação acessória, permanecendo a necessidade de emissão do Manifesto de Carga convencional.
+
+ EMISSÃO
+
+Para cada unidade de carga deverá ser emitida uma CL-e referente a cada Unidade da Federação de destino das mercadorias.
+
+A impressão da CL-e poderá ser feita em apenas uma via, em papel A4, que acompanhará a documentação fiscal da carga. 
+
+REQUISITOS
+
+A CL-e poderá ser emitida por qualquer transportador ou empresa que opere com cargas próprias.
+
+Para emitir a CL-e, o contribuinte deverá dispor de Certificado Digital de Pessoa Jurídica, tipos A1 ou A3 no padrão ICP-Brasil.
+
+É necessária a utilização de um leitor de código de barras para leitura dos códigos impressos nos DANFE.
+
+ MANUAL DO USUÁRIO
+
+O Manual de emissão poderá ser acessado no Portal da CL-e. 
+
+ACESSO AO PORTAL DA CL-e
+
+O Portal Nacional da CL-e pode ser acessado no endereço:
+http://nfe.sefaz.am.gov.br/cle
