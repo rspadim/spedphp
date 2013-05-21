@@ -3,7 +3,7 @@
 
 namespace SpedPHP\Components\Xml;
 
-use libray\Exception\RuntimeException;
+use SpedPHP\Common\Exception;
 
 class XmlValidate
 {
