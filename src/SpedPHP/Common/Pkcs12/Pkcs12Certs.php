@@ -10,9 +10,9 @@
  * @package   NFePHP
  */
 
-namespace library\Pkcs12;
+namespace Common\Pkcs12;
 
-use library\Exception;
+use Common\Exception;
 
 class Pkcs12Certs
 {
@@ -134,27 +134,27 @@ class Pkcs12Certs
             //o path foram carregados nas variaveis da classe
             if ($this->certsDir == '' || $this->pfxName == '') {
                 $msg = "Um certificado deve ser passado para a classe pelo arquivo de configuração!! ";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             //monta o caminho completo até o certificado pfx
             $pfxCert = $this->certsDir.$this->pfxName;
             //verifica se o arquivo existe
             if (!file_exists($pfxCert)) {
                 $msg = "Certificado não encontrado!! $pfxCert";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             //carrega o certificado em um string
             $pfxContent = file_get_contents($pfxCert);
             //carrega os certificados e chaves para um array denominado $x509certdata
             if (!openssl_pkcs12_read($pfxContent, $x509certdata, $this->keyPass)) {
                 $msg = "O certificado não pode ser lido!! Provavelmente corrompido ou com formato inválido!!";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             if ($testaVal) {
                 //verifica sua validade
                 if (!$aResp = $this->validCerts($x509certdata['cert'])) {
                     $msg = "Certificado invalido!! - " . $aResp['error'];
-                    throw new library\NfephpException($msg);
+                    throw new Common\NfephpException($msg);
                 }
             }
             //aqui verifica se existem as chaves em formato PEM
@@ -213,12 +213,12 @@ class Pkcs12Certs
                 //recriar os arquivos pem com o arquivo pfx
                 if (!file_put_contents($this->priKEY, $x509certdata['pkey'])) {
                     $msg = "Impossivel gravar no diretório!!! Permissão negada!!";
-                    throw new library\NfephpException($msg);
+                    throw new Common\NfephpException($msg);
                 }
                 $n = file_put_contents($this->pubKEY, $x509certdata['cert']);
                 $n = file_put_contents($this->certKEY, $x509certdata['pkey']."\r\n".$x509certdata['cert']);
             }
-        } catch (library\NfephpException $e) {
+        } catch (Common\NfephpException $e) {
             return false;
         }
         return true;
@@ -244,11 +244,11 @@ class Pkcs12Certs
         try {
             if ($cert == '') {
                 $msg = "O certificado é um parâmetro obrigatorio.";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             if (!$data = openssl_x509_read($cert)) {
                 $msg = "O certificado não pode ser lido pelo SSL - $cert .";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             $flagOK = true;
             $errorMsg = "";
@@ -283,7 +283,7 @@ class Pkcs12Certs
             $this->certDaysToExpire = $daysToExpire;
             $this->pfxTimestamp = $dValid;
             $aRetorno = array('status'=>$flagOK,'error'=>$errorMsg,'meses'=>$monthsToExpire,'dias'=>$daysToExpire);
-        } catch (library\NfephpException $e) {
+        } catch (Common\NfephpException $e) {
             return false;
         }
         return true;
@@ -306,7 +306,7 @@ class Pkcs12Certs
             //carregar a chave publica do arquivo pem
             if (!$pubKey = file_get_contents($certFile)) {
                 $msg = "Arquivo não encontrado - $certFile .";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             //carrega o certificado em um array usando o LF como referencia
             $arCert = explode("\n", $pubKey);
@@ -317,7 +317,7 @@ class Pkcs12Certs
                     $data .= trim($curData);
                 }
             }
-        } catch (library\NfephpException $e) {
+        } catch (Common\NfephpException $e) {
             return false;
         }
         return $data;
@@ -341,11 +341,11 @@ class Pkcs12Certs
         try {
             if ($tagid == '') {
                 $msg = "Uma tag deve ser indicada para que seja assinada!!";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             if ($docxml == '') {
                 $msg = "Um xml deve ser passado para que seja assinado!!";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             if (is_file($docxml)) {
                 $xml = file_get_contents($docxml);
@@ -384,13 +384,13 @@ class Pkcs12Certs
                     }
                     libxml_clear_errors();
                 }
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             //extrair a tag com os dados a serem assinados
             $node = $xmldoc->getElementsByTagName($tagid)->item(0);
             if (!isset($node)) {
                 $msg = "A tag < $tagid > não existe no XML!!";
-                throw new library\NfephpException($msg);
+                throw new Common\NfephpException($msg);
             }
             $id = trim($node->getAttribute("Id"));
             $idnome = preg_replace('/[^0-9]/', '', $id);
@@ -461,7 +461,7 @@ class Pkcs12Certs
             $xml = $xmldoc->saveXML();
             // libera a memoria
             openssl_free_key($pkeyid);
-        } catch (library\NfephpException $e) {
+        } catch (Common\NfephpException $e) {
             return false;
         }
         //retorna o documento assinado
@@ -529,7 +529,7 @@ class Pkcs12Certs
                 $err = $msg;
                 return false;
             }
-        } catch (library\NfephpException $e) {
+        } catch (Common\NfephpException $e) {
             return false;
         }
         return true;

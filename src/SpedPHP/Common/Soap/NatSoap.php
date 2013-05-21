@@ -5,10 +5,10 @@
  * and open the template in the editor.
  */
 
-namespace library\Soap;
+namespace Common\Soap;
 
-use library\Soap\CorrectedSoapClient;
-use library\Exception\NfephpException;
+use Common\Soap\CorrectedSoapClient;
+use Common\Exception\NfephpException;
 use LSS\XML2Array;
 
 class NatSoap
@@ -36,7 +36,7 @@ class NatSoap
      * @param type $pathWsdl
      * @param type $timeout
      * @return boolean
-     * @throws \library\Exception\NfephpException
+     * @throws \Common\Exception\NfephpException
      * @throws NfephpException
      */
     public function __construct($publicKey = '', $privateKey = '', $certificateKey = '', $pathWsdl = '', $timeout = 10)

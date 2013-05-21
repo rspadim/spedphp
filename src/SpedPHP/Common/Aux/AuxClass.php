@@ -9,9 +9,9 @@
  * @package   NFePHP
  */
 
-namespace library\Aux;
+namespace Common\Aux;
 
-use library\Exception;
+use Common\Exception;
 
 /**
  * 

@@ -9,7 +9,7 @@
  * @package   NFePHP
  */
 
-namespace library\Exception;
+namespace Common\Exception;
 
 /**
  * Exception class for NFePHP

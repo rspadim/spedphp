@@ -5,9 +5,9 @@
  * and open the template in the editor.
  */
 
-namespace library\Soap;
+namespace Common\Soap;
 
-use library\Exception\NfephpException;
+use Common\Exception\NfephpException;
 
 class CurlSoap
 {
@@ -50,7 +50,7 @@ class CurlSoap
      * @param type $user
      * @param type $pass
      * @return boolean
-     * @throws \library\Exception\NfephpException
+     * @throws \Common\Exception\NfephpException
      * @throws NfephpException
      */
     public function setProxy($ip = '', $port = '', $user = '', $pass = '')
@@ -86,7 +86,7 @@ class CurlSoap
      * @param type $metodo
      * @param type $ambiente
      * @return boolean|string
-     * @throws \library\Exception\NfephpException
+     * @throws \Common\Exception\NfephpException
      * @throws NfephpException
      */
     public function send($urlsefaz = '', $namespace = '', $cabecalho = '', $dados = '', $metodo = '', $ambiente = '')

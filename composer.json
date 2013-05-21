@@ -1,9 +1,9 @@
 {
     "name": "nfephp",
     "type": "library",
-    "description": "NFePHP é uma API para gerenciamento das comunicações entre o emitente de NFe e os serviços dos SEFAZ estaduais. Inteiramente construído em PHP para rodar sob qualquer sistema operacional.",
-    "keywords": ["nfe","nfephp"],
-    "homepage": "https://github.com/nfephp-org/nfephp",
+    "description": "SpedPHP é uma API para gerar xmls e fazer a comunicação entre o emitente de Documentos Eletrônicos e os serviços dos SEFAZ estaduais. Inteiramente construído em PHP para rodar sob qualquer sistema operacional.",
+    "keywords": ["nfe","nfephp","spedphp"],
+    "homepage": "https://github.com/nfephp-org/spedhp",
     "license": ["GPL 3", "LGPL 3"],
     "authors": [
         {
@@ -41,21 +41,19 @@
         "ext-openssl": "*",
         "ext-zip": "*",
         "ext-zlib": "*",
-        "ext-pdo": "*",
-        "ext-pdo_mysql": "*",
-        "ext-pdo_sqlite": "*",
         "apigen/apigen": ">=2.8.0",
+        "phpunit/phpunit": "3.7.*",
         "openlss/lib-array2xml": "dev-master",
         "zendframework/zendpdf": ">=2.0.2",
         "zendframework/zend-barcode": ">=2.1.5",
         "zendframework/zend-mail": ">=2.1.5",
         "ensepar/tcpdf": "dev-master",
-        "phpmailer/phpmailer": ">=v5.2.6"
+        "phpmailer/phpmailer": ">=v5.2.6",
+        "tonicospinelli/classgeneration": ">=1.0.0"
     },
     "autoload": {
         "psr-0": {
-            "NFePHP": "src/",
-            "library": "src/"        
+            "": "src/"
         }
     }
 }

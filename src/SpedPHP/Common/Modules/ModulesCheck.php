@@ -1,9 +1,9 @@
 <?php
 
 
-namespace library\Modules;
+namespace Common\Modules;
 
-use library\Exception\NfephpException;
+use Common\Exception\NfephpException;
 
 
 //classe de verificação dos modulos instalados no PHP
