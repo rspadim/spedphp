@@ -10,11 +10,11 @@
  * @package   NFePHP
  */
 
-namespace NFePHP;
+namespace SpedPHP\NFe;
 
-use library\Exception;
-use library\Soap;
-use library\Pkcs12;
+use SpedPHP\Common\Exception;
+use SpedPHP\Common\Soap;
+use SpedPHP\Common\Pkcs12;
 
 /**
  * @package   NFePHP
@@ -965,7 +965,11 @@ class NFePHP
             $procXML = str_replace("\n", '', $procXML);
             $procXML = str_replace("\r", '', $procXML);
             $procXML = str_replace("\s", '', $procXML);
-            $procXML = str_replace('NFe xmlns="http://www.portalfiscal.inf.br/nfe" xmlns="http://www.w3.org/2000/09/xmldsig#"', 'NFe xmlns="http://www.portalfiscal.inf.br/nfe"', $procXML);
+            $procXML = str_replace(
+                    'NFe xmlns="http://www.portalfiscal.inf.br/nfe" xmlns="http://www.w3.org/2000/09/xmldsig#"',
+                    'NFe xmlns="http://www.portalfiscal.inf.br/nfe"',
+                    $procXML
+            );
         } catch (Exception\NfephpException $e) {
             //$this->setError($e->getMessage());
             //throw $e;
@@ -1588,7 +1592,9 @@ class NFePHP
                     $aRetorno['aCanc'] = $aCanc;
                     $aRetorno['aEventos'] = $aEventos;
                     //gravar o retorno na pasta temp apenas se a nota foi aprovada ou denegada
-                    if ( $aRetorno['cStat'] == 100 || $aRetorno['cStat'] == 101 || $aRetorno['cStat'] == 110 || $aRetorno['cStat'] == 301 || $aRetorno['cStat'] == 302 ){
+                    if ( $aRetorno['cStat'] == 100 || $aRetorno['cStat'] == 101 ||
+                            $aRetorno['cStat'] == 110 || $aRetorno['cStat'] == 301 ||
+                            $aRetorno['cStat'] == 302 ){
                         //nome do arquivo
                         $nomeArq = $chave.'-prot.xml';
                         $nome = $this->temDir.$nomeArq;
@@ -1603,19 +1609,26 @@ class NFePHP
                     // status do serviço
                     $aRetorno['cStat'] = $doc->getElementsByTagName('cStat')->item(0)->nodeValue;
                     // motivo da resposta (opcional)
-                    $aRetorno['xMotivo'] = !empty($doc->getElementsByTagName('xMotivo')->item(0)->nodeValue) ? $doc->getElementsByTagName('xMotivo')->item(0)->nodeValue : '';
+                    $aRetorno['xMotivo'] = !empty($doc->getElementsByTagName('xMotivo')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('xMotivo')->item(0)->nodeValue : '';
                     // numero do recibo consultado
-                    $aRetorno['nRec'] = !empty($doc->getElementsByTagName('nRec')->item(0)->nodeValue) ? $doc->getElementsByTagName('nRec')->item(0)->nodeValue : '';
+                    $aRetorno['nRec'] = !empty($doc->getElementsByTagName('nRec')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('nRec')->item(0)->nodeValue : '';
                     // tipo de ambiente
-                    $aRetorno['tpAmb'] = !empty($doc->getElementsByTagName('tpAmb')->item(0)->nodeValue) ? $doc->getElementsByTagName('tpAmb')->item(0)->nodeValue : '';
+                    $aRetorno['tpAmb'] = !empty($doc->getElementsByTagName('tpAmb')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('tpAmb')->item(0)->nodeValue : '';
                     // versao do aplicativo que recebeu a consulta
-                    $aRetorno['verAplic'] = !empty($doc->getElementsByTagName('verAplic')->item(0)->nodeValue) ? $doc->getElementsByTagName('verAplic')->item(0)->nodeValue : '';
+                    $aRetorno['verAplic'] = !empty($doc->getElementsByTagName('verAplic')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('verAplic')->item(0)->nodeValue : '';
                     // codigo da UF que atendeu a solicitacao
-                    $aRetorno['cUF'] = !empty($doc->getElementsByTagName('cUF')->item(0)->nodeValue) ? $doc->getElementsByTagName('cUF')->item(0)->nodeValue : '';
+                    $aRetorno['cUF'] = !empty($doc->getElementsByTagName('cUF')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('cUF')->item(0)->nodeValue : '';
                     // codigo da mensagem da SEFAZ para o emissor (opcional)
-                    $aRetorno['cMsg'] = !empty($doc->getElementsByTagName('cMsg')->item(0)->nodeValue) ? $doc->getElementsByTagName('cMsg')->item(0)->nodeValue : '';
+                    $aRetorno['cMsg'] = !empty($doc->getElementsByTagName('cMsg')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('cMsg')->item(0)->nodeValue : '';
                     // texto da mensagem da SEFAZ para o emissor (opcional)
-                    $aRetorno['xMsg'] = !empty($doc->getElementsByTagName('xMsg')->item(0)->nodeValue) ? $doc->getElementsByTagName('xMsg')->item(0)->nodeValue : '';
+                    $aRetorno['xMsg'] = !empty($doc->getElementsByTagName('xMsg')->item(0)->nodeValue) ?
+                            $doc->getElementsByTagName('xMsg')->item(0)->nodeValue : '';
                     if ($cStat == '104') {
                         //aqui podem ter varios retornos dependendo do numero de NFe enviadas no Lote e já processadas
                         $protNfe = $doc->getElementsByTagName('protNFe');
@@ -1629,7 +1642,8 @@ class NFePHP
                             $i++; //incluido increment para controlador de indice do array
                             //salvar o protocolo somente se a nota estiver approvada ou denegada
                             if ($protcStat == 100 || $protcStat == 110 || $protcStat == 301 || $protcStat == 302) {
-                                $nomeprot = $this->temDir.$infProt->getElementsByTagName('chNFe')->item(0)->nodeValue.'-prot.xml';//id da nfe
+                                $nomeprot = $this->temDir.$infProt->getElementsByTagName('chNFe')->
+                                        item(0)->nodeValue.'-prot.xml';//id da nfe
                                 //salvar o protocolo em arquivo
                                 $novoprot = new DOMDocument('1.0', 'UTF-8');
                                 $novoprot->formatOutput = true;
@@ -1642,7 +1656,11 @@ class NFePHP
                                 $pNFe->appendChild($node);
                                 $novoprot->appendChild($pNFe);
                                 $xml = $novoprot->saveXML();
-                                $xml = str_replace('<?xml version="1.0" encoding="UTF-8  standalone="no"?>', '<?xml version="1.0" encoding="UTF-8"?>', $xml);
+                                $xml = str_replace(
+                                        '<?xml version="1.0" encoding="UTF-8  standalone="no"?>',
+                                        '<?xml version="1.0" encoding="UTF-8"?>',
+                                        $xml
+                                );
                                 $xml = str_replace(array("default:",":default"), "", $xml);
                                 $xml = str_replace("\n", "", $xml);
                                 $xml = str_replace("  ", " ", $xml);
@@ -1658,7 +1676,8 @@ class NFePHP
                     //converter o horário do recebimento retornado pela SEFAZ em formato padrão
                     if (isset($aProt)) {
                         foreach ($aProt as &$p) {
-                            $p['dhRecbto'] = !empty($p['dhRecbto']) ? date("d/m/Y H:i:s", $this->convertTime($p['dhRecbto'])) : '';
+                            $p['dhRecbto'] = !empty($p['dhRecbto']) ?
+                                    date("d/m/Y H:i:s", $this->convertTime($p['dhRecbto'])) : '';
                         }
                     } else {
                         $aProt = array();
@@ -1689,15 +1708,25 @@ class NFePHP
      *
      * @name getListNFe
      * @param boolean $AN TRUE - usa ambiente Nacional para buscar a lista de NFe, FALSE usa sua própria SEFAZ
-     * @param string $indNFe Indicador de NF-e consultada: 0=Todas as NF-e; 1=Somente as NF-e que ainda não tiveram manifestação do destinatário (Desconhecimento da operação, Operação não Realizada ou Confirmação da Operação); 2=Idem anterior, incluindo as NF-e que também não tiveram a Ciência da Operação
-     * @param string $indEmi Indicador do Emissor da NF-e: 0=Todos os Emitentes / Remetentes; 1=Somente as NF-e emitidas por emissores / remetentes que não tenham a mesma raiz do CNPJ do destinatário (para excluir as notas fiscais de transferência entre filiais).
-     * @param string $ultNSU Último NSU recebido pela Empresa. Caso seja informado com zero, ou com um NSU muito antigo, a consulta retornará unicamente as notas fiscais que tenham sido recepcionadas nos últimos 15 dias.
+     * @param string $indNFe Indicador de NF-e consultada: 
+     * 0=Todas as NF-e; 
+     * 1=Somente as NF-e que ainda não tiveram manifestação do destinatário 
+     * (Desconhecimento da operação, Operação não Realizada ou Confirmação da Operação);
+     * 2=Idem anterior, incluindo as NF-e que também não tiveram a Ciência da Operação
+     * @param string $indEmi Indicador do Emissor da NF-e: 
+     * 0=Todos os Emitentes / Remetentes; 
+     * 1=Somente as NF-e emitidas por emissores / remetentes que não tenham a mesma raiz do CNPJ do destinatário 
+     * (para excluir as notas fiscais de transferência entre filiais).
+     * @param string $ultNSU Último NSU recebido pela Empresa. 
+     * Caso seja informado com zero, ou com um NSU muito antigo, a consulta retornará unicamente as 
+     * notas fiscais que tenham sido recepcionadas nos últimos 15 dias.
      * @param string $tpAmb Tipo de ambiente 1=Produção 2=Homologação
      * @param string $modSOAP
      * @param array $resp Array com os retornos parametro passado por REFRENCIA
      * @return mixed False ou xml com os dados
      */
-    public function soapGetListNFe($AN = false, $indNFe = '0', $indEmi = '0', $ultNSU = '', $tpAmb = '', $modSOAP = '2', &$resp = '')
+    public function soapGetListNFe($AN = false, $indNFe = '0', $indEmi = '0', $ultNSU = '',
+            $tpAmb = '', $modSOAP = '2', &$resp = '')
     {
         try {
             $datahora = date('Ymd_His');
@@ -1705,10 +1734,18 @@ class NFePHP
                 $tpAmb = $this->tpAmb;
             }
             if (!$AN) {
-                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,$this->UF);
+                $aURL = $this->loadSEFAZ(
+                        $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,
+                        $tpAmb,
+                        $this->UF
+                );
                 $sigla = $this->UF;
             } else {
-                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'AN');
+                $aURL = $this->loadSEFAZ(
+                        $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,
+                        $tpAmb,
+                        'AN'
+                );
                 $sigla = 'AN';
             }
             if ($ultNSU == '') {
@@ -1732,9 +1769,13 @@ class NFePHP
             //montagem do namespace do serviço
             $namespace = $this->URLPortal.'/wsdl/'.$servico;
             //monta a consulta
-            $Ev = '<consNFeDest xmlns="'.$this->URLPortal.'" versao="'.$versao.'"><tpAmb>'.$tpAmb.'</tpAmb><xServ>CONSULTAR NFE DEST</xServ><CNPJ>'.$this->cnpj.'</CNPJ><indNFe>'.$indNFe.'</indNFe><indEmi>'.$indEmi.'</indEmi><ultNSU>'.$ultNSU.'</ultNSU></consNFeDest>';
+            $Ev = '<consNFeDest xmlns="'.$this->URLPortal.'" versao="'.$versao.'">
+                <tpAmb>'.$tpAmb.'</tpAmb><xServ>CONSULTAR NFE DEST</xServ>
+                <CNPJ>'.$this->cnpj.'</CNPJ><indNFe>'.$indNFe.'</indNFe>
+                <indEmi>'.$indEmi.'</indEmi><ultNSU>'.$ultNSU.'</ultNSU></consNFeDest>';
             //montagem do cabeçalho da comunicação SOAP
-            $cabec = '<nfeCabecMsg xmlns="'. $namespace . '"><cUF>'.$this->cUF.'</cUF><versaoDados>'.$versao.'</versaoDados></nfeCabecMsg>';
+            $cabec = '<nfeCabecMsg xmlns="'. $namespace . '"><cUF>'.$this->cUF.'</cUF>
+                <versaoDados>'.$versao.'</versaoDados></nfeCabecMsg>';
             //montagem dos dados da mensagem SOAP
             $dados = '<nfeDadosMsg xmlns="'.$namespace.'">'.$Ev.'</nfeDadosMsg>';
             //grava solicitação em temp
@@ -1762,16 +1803,21 @@ class NFePHP
             $xmlLNFe->loadXML($retorno, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
             $retConsNFeDest = $xmlLNFe->getElementsByTagName("retConsNFeDest")->item(0);
             if (isset($retConsNFeDest)) {
-                $cStat = !empty($retConsNFeDest->getElementsByTagName('cStat')->item(0)->nodeValue) ? $retConsNFeDest->getElementsByTagName('cStat')->item(0)->nodeValue : '';
-                $xMotivo = !empty($retConsNFeDest->getElementsByTagName('xMotivo')->item(0)->nodeValue) ? $retConsNFeDest->getElementsByTagName('xMotivo')->item(0)->nodeValue : '';
-                $ultNSU  = !empty($retConsNFeDest->getElementsByTagName('ultNSU')->item(0)->nodeValue) ? $retConsNFeDest->getElementsByTagName('ultNSU')->item(0)->nodeValue : '';
-                $indCont = !empty($retConsNFeDest->getElementsByTagName('indCont')->item(0)->nodeValue) ? $retConsNFeDest->getElementsByTagName('indCont')->item(0)->nodeValue : 0;
+                $cStat = !empty($retConsNFeDest->getElementsByTagName('cStat')->item(0)->nodeValue) ?
+                        $retConsNFeDest->getElementsByTagName('cStat')->item(0)->nodeValue : '';
+                $xMotivo = !empty($retConsNFeDest->getElementsByTagName('xMotivo')->item(0)->nodeValue) ?
+                        $retConsNFeDest->getElementsByTagName('xMotivo')->item(0)->nodeValue : '';
+                $ultNSU  = !empty($retConsNFeDest->getElementsByTagName('ultNSU')->item(0)->nodeValue) ?
+                        $retConsNFeDest->getElementsByTagName('ultNSU')->item(0)->nodeValue : '';
+                $indCont = !empty($retConsNFeDest->getElementsByTagName('indCont')->item(0)->nodeValue) ?
+                        $retConsNFeDest->getElementsByTagName('indCont')->item(0)->nodeValue : 0;
             } else {
                 $cStat = '';
             }
             if ($cStat == '') {
                 //houve erro
-                $msg = "cStat está em branco, houve erro na comunicação Soap verifique a mensagem de erro e o debug!!";
+                $msg = "cStat está em branco, houve erro na comunicação Soap 
+                    verifique a mensagem de erro e o debug!!";
                 throw new Exception\NfephpException($msg);
             }
             //erro no processamento
@@ -1799,7 +1845,15 @@ class NFePHP
                     $tpNF = $resNFe->getElementsByTagName('tpNF')->item(0)->nodeValue;
                     $cSitNFe = $resNFe->getElementsByTagName('cSitNFe')->item(0)->nodeValue;
                     $cSitConf = $resNFe->getElementsByTagName('cSitConf')->item(0)->nodeValue;
-                    $aNFe[] = array('chNFe'=>$chNFe,'CNPJ'=>$CNPJ,'xNome'=>$xNome,'dEmi'=>$dEmi,'dhRecbto'=>$dhRecbto,'$tpNF'=>$tpNF,'cSitNFe'=>$cSitNFe,'cSitconf'=>$cSitConf);
+                    $aNFe[] = array(
+                        'chNFe'=>$chNFe,
+                        'CNPJ'=>$CNPJ,
+                        'xNome'=>$xNome,
+                        'dEmi'=>$dEmi,
+                        'dhRecbto'=>$dhRecbto,
+                        '$tpNF'=>$tpNF,
+                        'cSitNFe'=>$cSitNFe,
+                        'cSitconf'=>$cSitConf);
                 }//fim resNFe
                 if (isset($resCanc)) {
                     //existem notas emitida para esse cnpj
@@ -1811,7 +1865,15 @@ class NFePHP
                     $tpNF = $resCanc->getElementsByTagName('tpNF')->item(0)->nodeValue;
                     $cSitNFe = $resCanc->getElementsByTagName('cSitNFe')->item(0)->nodeValue;
                     $cSitConf = $resCanc->getElementsByTagName('cSitConf')->item(0)->nodeValue;
-                    $aCanc[] = array('chNFe'=>$chNFe,'CNPJ'=>$CNPJ,'xNome'=>$xNome,'dEmi'=>$dEmi,'dhRecbto'=>$dhRecbto,'$tpNF'=>$tpNF,'cSitNFe'=>$cSitNFe,'cSitconf'=>$cSitConf);
+                    $aCanc[] = array(
+                        'chNFe'=>$chNFe,
+                        'CNPJ'=>$CNPJ,
+                        'xNome'=>$xNome,
+                        'dEmi'=>$dEmi,
+                        'dhRecbto'=>$dhRecbto,
+                        '$tpNF'=>$tpNF,
+                        'cSitNFe'=>$cSitNFe,
+                        'cSitconf'=>$cSitConf);
                 }//fim resCanc
                 if (isset($resCCe)) {
                     //existem notas emitida para esse cnpj
@@ -1823,7 +1885,15 @@ class NFePHP
                     $descEvento = $resCCe->getElementsByTagName('descEvento')->item(0)->nodeValue;
                     $xCorrecao = $resCCe->getElementsByTagName('xCorrecao')->item(0)->nodeValue;
                     $tpNF = $resCCe->getElementsByTagName('tpNF')->item(0)->nodeValue;
-                    $aCCe[] = array('chNFe'=>$chNFe,'tpEvento'=>$tpEvento,'nSeqEvento'=>$nSeqEvento,'dhEvento'=>$dhEvento,'dhRecbto'=>$dhRecbto,'descEvento'=>$descEvento,'xCorrecao'=>$xCorrecao,'tpNF'=>$tpNF);
+                    $aCCe[] = array(
+                        'chNFe'=>$chNFe,
+                        'tpEvento'=>$tpEvento,
+                        'nSeqEvento'=>$nSeqEvento,
+                        'dhEvento'=>$dhEvento,
+                        'dhRecbto'=>$dhRecbto,
+                        'descEvento'=>$descEvento,
+                        'xCorrecao'=>$xCorrecao,
+                        'tpNF'=>$tpNF);
                 }//fim resCCe
             }//fim foreach ret
             //salva o arquivo xml
@@ -1875,14 +1945,22 @@ class NFePHP
                 $tpAmb = $this->tpAmb;
             }
             if ($AN) {
-                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'AN');
+                $aURL = $this->loadSEFAZ(
+                        $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,
+                        $tpAmb,
+                        'AN'
+               );
             } else {
                 //deve se verificado se NFe emitidas em SCAN, com séries começando com 9
                 //podem ser obtidas no sefaz do emitente DUVIDA!!!
                 //obtem a SEFAZ do emissor
                 $cUF = substr($chNFe, 0, 2);
                 $UF = $this->UFList[$cUF];
-                $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,$UF);
+                $aURL = $this->loadSEFAZ(
+                        $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,
+                        $tpAmb,
+                        $UF
+                );
             }
             //identificação do serviço
             $servico = 'NfeDownloadNF';
@@ -1899,9 +1977,14 @@ class NFePHP
                 throw new Exception\NfephpException($msg);
             }
             //montagem do cabeçalho da comunicação SOAP
-            $cabec = '<nfeCabecMsg xmlns="'. $namespace . '"><cUF>'.$this->cUF.'</cUF><versaoDados>'.$versao.'</versaoDados></nfeCabecMsg>';
+            $cabec = '<nfeCabecMsg xmlns="'. $namespace . '"><cUF>'.$this->cUF.'</cUF>
+                <versaoDados>'.$versao.'</versaoDados></nfeCabecMsg>';
             //montagem dos dados da mensagem SOAP
-            $dados = '<nfeDadosMsg xmlns="'.$namespace.'"><downloadNFe xmlns="'.$this->URLPortal.'" versao="'.$versao.'"><tpAmb>'.$tpAmb.'</tpAmb><xServ>DOWNLOAD NFE</xServ><CNPJ>'.$this->cnpj.'</CNPJ><chNFe>'.$chNFe.'</chNFe></downloadNFe></nfeDadosMsg>';
+            $dados = '<nfeDadosMsg xmlns="'.$namespace.'">
+                <downloadNFe xmlns="'.$this->URLPortal.'" versao="'.$versao.'">
+                <tpAmb>'.$tpAmb.'</tpAmb><xServ>DOWNLOAD NFE</xServ>
+                <CNPJ>'.$this->cnpj.'</CNPJ><chNFe>'.$chNFe.'</chNFe>
+                </downloadNFe></nfeDadosMsg>';
             //envia dados via SOAP
             if ($modSOAP == '2') {
                 $retorno = new Soap\CurlSOAP($urlservico, $namespace, $cabec, $dados, $metodo, $tpAmb);
@@ -2632,8 +2715,11 @@ class NFePHP
             }
             switch ($tpEvento) {
                 case '210200':
-                    $descEvento = 'Confirmacao da Operacao'; //confirma a operação e o recebimento da mercadoria (para as operações com circulação de mercadoria)
-                    //Após a Confirmação da Operação pelo destinatário, a empresa emitente fica automaticamente impedida de cancelar a NF-e
+                    $descEvento = 'Confirmacao da Operacao';
+                    //confirma a operação e o recebimento da mercadoria (para as operações com 
+                    //circulação de mercadoria)
+                    //Após a Confirmação da Operação pelo destinatário, a empresa emitente 
+                    //fica automaticamente impedida de cancelar a NF-e
                     break;
                 case '210210':
                     $descEvento = 'Ciencia da Operacao'; //encrenca !!! Não usar
@@ -2650,12 +2736,14 @@ class NFePHP
                     //desconhecimento de uma determinada operação que conste nesta relação, por exemplo
                     break;
                 case '210240':
-                    $descEvento = 'Operacao nao Realizada'; //não aceitação no recebimento que antes se fazia com apenas um carimbo na NF
+                    $descEvento = 'Operacao nao Realizada';
+                    //não aceitação no recebimento que antes se fazia com apenas um carimbo na NF                    
                     //operação não foi realizada (com Recusa de Recebimento da mercadoria e outros motivos),
                     //não cabendo neste caso a emissão de uma Nota Fiscal de devolução.
                     break;
                 default:
-                    $msg = "O código do tipo de evento informado não corresponde a nenhum evento de manifestação de destinatário.";
+                    $msg = "O código do tipo de evento informado não corresponde a 
+                        nenhum evento de manifestação de destinatário.";
                     throw new Exception\NfephpException($msg);
             }
             $resp = array('bStat'=>false,'cStat'=>'','xMotivo'=>'','arquivo'=>'');
@@ -2671,7 +2759,12 @@ class NFePHP
             }
             //utilizar AN para enviar o manifesto
             $sigla = 'AN';
-            $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,$sigla);
+            $aURL = $this->loadSEFAZ(
+                $this->raizDir . 'config' . DIRECTORY_SEPARATOR .
+                $this->xmlURLfile,
+                $tpAmb,
+                $sigla
+            );
             $cOrgao='91';
             $numLote = substr(str_replace(',', '', number_format(microtime(true)*1000000, 0)), 0, 15);
             //Data e hora do evento no formato AAAA-MM-DDTHH:MM:SSTZD (UTC)
@@ -2722,7 +2815,8 @@ class NFePHP
             $dados .= $Ev;
             $dados .= "</envEvento>";
             //montagem da mensagem
-            $cabec = "<nfeCabecMsg xmlns=\"$namespace\"><cUF>$this->cUF</cUF><versaoDados>$versao</versaoDados></nfeCabecMsg>";
+            $cabec = "<nfeCabecMsg xmlns=\"$namespace\"><cUF>$this->cUF</cUF>
+                <versaoDados>$versao</versaoDados></nfeCabecMsg>";
             $dados = "<nfeDadosMsg xmlns=\"$namespace\">$dados</nfeDadosMsg>";
             //grava solicitação em temp
             if (!file_put_contents($this->temDir."$chNFe-$nSeqEvento-envMDe.xml", $Ev)) {
@@ -2748,11 +2842,14 @@ class NFePHP
             $xmlMDe->loadXML($retorno, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG);
             $retEvento = $xmlMDe->getElementsByTagName("retEvento")->item(0);
             $infEvento = $xmlMDe->getElementsByTagName("infEvento")->item(0);
-            $cStat = !empty($retEvento->getElementsByTagName('cStat')->item(0)->nodeValue) ? $retEvento->getElementsByTagName('cStat')->item(0)->nodeValue : '';
-            $xMotivo = !empty($retEvento->getElementsByTagName('xMotivo')->item(0)->nodeValue) ? $retEvento->getElementsByTagName('xMotivo')->item(0)->nodeValue : '';
+            $cStat = !empty($retEvento->getElementsByTagName('cStat')->item(0)->nodeValue) ?
+                    $retEvento->getElementsByTagName('cStat')->item(0)->nodeValue : '';
+            $xMotivo = !empty($retEvento->getElementsByTagName('xMotivo')->item(0)->nodeValue) ?
+                    $retEvento->getElementsByTagName('xMotivo')->item(0)->nodeValue : '';
             if ($cStat == '') {
                 //houve erro
-                $msg = "cStat está em branco, houve erro na comunicação Soap verifique a mensagem de erro e o debug!!";
+                $msg = "cStat está em branco, houve erro na comunicação Soap verifique a mensagem de erro 
+                    e o debug!!";
                 throw new Exception\NfephpException($msg);
             }
             //tratar erro de versão do XML
@@ -2865,20 +2962,25 @@ class NFePHP
                     $ide = $dom->getElementsByTagName("ide")->item(0);
                     $xtpAmb = $ide->getElementsByTagName("tpAmb")->item(0)->nodeValue;
                     $tpEmis = $ide->getElementsByTagName("tpEmis")->item(0)->nodeValue;
-                    $dhCont = !empty($dom->getElementsByTagName("dhCont")->item(0)->nodeValue) ? $dom->getElementsByTagName("dhCont")->item(0)->nodeValue : '';
-                    $xJust = !empty($dom->getElementsByTagName("xJust")->item(0)->nodeValue) ? $dom->getElementsByTagName("xJust")->item(0)->nodeValue : '';
-                    $verProc = !empty($dom->getElementsByTagName("verProc")->item(0)->nodeValue) ? $dom->getElementsByTagName("verProc")->item(0)->nodeValue : '';
+                    $dhCont = !empty($dom->getElementsByTagName("dhCont")->item(0)->nodeValue) ?
+                            $dom->getElementsByTagName("dhCont")->item(0)->nodeValue : '';
+                    $xJust = !empty($dom->getElementsByTagName("xJust")->item(0)->nodeValue) ?
+                            $dom->getElementsByTagName("xJust")->item(0)->nodeValue : '';
+                    $verProc = !empty($dom->getElementsByTagName("verProc")->item(0)->nodeValue) ?
+                            $dom->getElementsByTagName("verProc")->item(0)->nodeValue : '';
                     $chNFe = preg_replace('/[^0-9]/', '', trim($infNFe->getAttribute("Id")));
                     if ($tpEmis != '4') {
                         $msg = "O tipo de emissão deve ser igual a 4 e não $tpEmiss!!";
                         throw new Exception\NfephpException($msg);
                     }
                     if ($xJust == '' || strlen($xJust) < 15 || strlen($xJust > 256)) {
-                        $msg = "A NFe deve conter uma justificativa com 15 até 256 dígitos. Sua justificativa está com " . strlen($xJust). " dígitos";
+                        $msg = "A NFe deve conter uma justificativa com 15 até 256 dígitos. 
+                            Sua justificativa está com " . strlen($xJust). " dígitos";
                         throw new Exception\NfephpException($msg);
                     }
                     if ($xtpAmb != $tpAmb) {
-                        $msg = "O tipo de ambiente indicado na NFe deve ser o mesmo da chamada do método e estão diferentes!!";
+                        $msg = "O tipo de ambiente indicado na NFe deve ser o mesmo da chamada do 
+                            método e estão diferentes!!";
                         throw new Exception\NfephpException($msg);
                     }
                     if ($verProc == '') {
@@ -2886,13 +2988,19 @@ class NFePHP
                         throw new Exception\NfephpException($msg);
                     }
                     $dest = $dom->getElementsByTagName("dest")->item(0);
-                    $destCNPJ = !empty($dest->getElementsByTagName("CNPJ")->item(0)->nodeValue) ? $dest->getElementsByTagName("CNPJ")->item(0)->nodeValue : '';
-                    $destCPF  = !empty($dest->getElementsByTagName("CPF")->item(0)->nodeValue) ? $dest->getElementsByTagName("CPF")->item(0)->nodeValue : '';
-                    $destUF = !empty($dest->getElementsByTagName("UF")->item(0)->nodeValue) ? $dest->getElementsByTagName("UF")->item(0)->nodeValue : '';
+                    $destCNPJ = !empty($dest->getElementsByTagName("CNPJ")->item(0)->nodeValue) ?
+                            $dest->getElementsByTagName("CNPJ")->item(0)->nodeValue : '';
+                    $destCPF  = !empty($dest->getElementsByTagName("CPF")->item(0)->nodeValue) ?
+                            $dest->getElementsByTagName("CPF")->item(0)->nodeValue : '';
+                    $destUF = !empty($dest->getElementsByTagName("UF")->item(0)->nodeValue) ?
+                            $dest->getElementsByTagName("UF")->item(0)->nodeValue : '';
                     $ICMSTot = $dom->getElementsByTagName("ICMSTot")->item(0);
-                    $vNF = !empty($ICMSTot->getElementsByTagName("vNF")->item(0)->nodeValue) ? $ICMSTot->getElementsByTagName("vNF")->item(0)->nodeValue : '';
-                    $vICMS = !empty($ICMSTot->getElementsByTagName("vICMS")->item(0)->nodeValue) ? $ICMSTot->getElementsByTagName("vICMS")->item(0)->nodeValue : '';
-                    $vST = !empty($ICMSTot->getElementsByTagName("vST")->item(0)->nodeValue) ? $ICMSTot->getElementsByTagName("vST")->item(0)->nodeValue : '';
+                    $vNF = !empty($ICMSTot->getElementsByTagName("vNF")->item(0)->nodeValue) ?
+                            $ICMSTot->getElementsByTagName("vNF")->item(0)->nodeValue : '';
+                    $vICMS = !empty($ICMSTot->getElementsByTagName("vICMS")->item(0)->nodeValue) ?
+                            $ICMSTot->getElementsByTagName("vICMS")->item(0)->nodeValue : '';
+                    $vST = !empty($ICMSTot->getElementsByTagName("vST")->item(0)->nodeValue) ?
+                            $ICMSTot->getElementsByTagName("vST")->item(0)->nodeValue : '';
                     $aD[$i]['tpAmb'] = $xtpAmb;
                     $aD[$i]['tpEmiss'] = $tpEmiss;
                     $aD[$i]['dhCont'] = $dhCont;
@@ -2908,7 +3016,12 @@ class NFePHP
                 } //fim errors
             }//fim foreach
             //com a matriz de dados montada criar o arquivo DPEC para as NFe que atendem os critérios
-            $aURL = $this->loadSEFAZ( $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile,$tpAmb,'DPEC');
+            $aURL = $this->loadSEFAZ(
+                    $this->raizDir . 'config' . DIRECTORY_SEPARATOR .
+                    $this->xmlURLfile,
+                    $tpAmb,
+                    'DPEC'
+            );
             //identificação do serviço
             $servico = 'SCERecepcaoRFB';
             //recuperação da versão
@@ -2922,14 +3035,17 @@ class NFePHP
             $dpec = '';
             $dpec .= "<envDPEC xmlns=\"$this->URLPortal\" versao=\"$versao\">";
             $dpec .= "<infDPEC><id>DPEC$this->CNPJ</id>";
-            $dpec .= "<ideDec><cUF>$this->cUF</cUF><tpAmb>$tpAmb</tpAmb><verProc>$verProc</verProc><CNPJ>$this->CNPJ</CNPJ><IE>$this->IE</IE></ideDec>";
+            $dpec .= "<ideDec><cUF>$this->cUF</cUF><tpAmb>$tpAmb</tpAmb><verProc>
+                    $verProc</verProc><CNPJ>$this->CNPJ</CNPJ><IE>$this->IE</IE></ideDec>";
             foreach ($aD as $d) {
                 if ($d['CPF'] != '') {
                     $cnpj = "<CPF>".$d['CPF']."</CPF>";
                 } else {
                     $cnpj = "<CNPJ>".$d['CNPJ']."</CNPJ>";
                 }
-                $dpec .= "<resNFe><chNFe>".$d['chNFe']."</chNFe>$cnpj<UF>".$d['UF']."</UF><vNF>".$d['vNF']."</vNF><vICMS>".$d['vICMS']."</vICMS><vST>".$d['vST']."</vST></resNFe>";
+                $dpec .= "<resNFe><chNFe>".$d['chNFe']."</chNFe>$cnpj<UF>".
+                        $d['UF']."</UF><vNF>".$d['vNF']."</vNF><vICMS>".
+                        $d['vICMS']."</vICMS><vST>".$d['vST']."</vST></resNFe>";
             }
             $dpec .= "</infDPEC></envDPEC>";
             //assinar a mensagem
@@ -2944,7 +3060,8 @@ class NFePHP
             $dados = str_replace('<?xml version="1.0" encoding="UTF-8"?>', '', $dados);
             $dados = str_replace(array("\r","\n","\s"), '', $dados);
             //grava a solicitação na pasta depec
-            if( !file_put_contents($this->dpcDir.$this->CNPJ.'-depc.xml', '<?xml version="1.0" encoding="utf-8"?>'.$dpec)){
+            if( !file_put_contents($this->dpcDir.$this->CNPJ.'-depc.xml',
+                    '<?xml version="1.0" encoding="utf-8"?>'.$dpec)){
                 $msg = "Falha na gravação do pedido contingencia DPEC.";
                 throw new Exception\NfephpException($msg);
             }
@@ -3018,12 +3135,14 @@ class NFePHP
                 throw new Exception\NfephpException($msg);
             }
             if ($nProtSefaz != $nProt) {
-                $msg = "Os numeros dos protocolos não combinam!! nProtNF = " . $nProt . " <> nProtSefaz = " . $nProtSefaz."";
+                $msg = "Os numeros dos protocolos não combinam!! nProtNF = " .
+                        $nProt . " <> nProtSefaz = " . $nProtSefaz."";
                 throw new Exception\NfephpException($msg);
             }
             //verifica o digest
             if ($digestSefaz != $digest) {
-                $msg = "Os numeros digest não combinam!! digValSEFAZ = " . $digestSefaz . " <> DigestValue = " . $digest."";
+                $msg = "Os numeros digest não combinam!! digValSEFAZ = " .
+                        $digestSefaz . " <> DigestValue = " . $digest."";
                 throw new Exception\NfephpException($msg);
             }
         } catch (Exception\NfephpException $e) {
@@ -3302,8 +3421,10 @@ class NFePHP
                 $msg = "O xml retornado possue erros ou não é um xml.";
                 throw new Exception\NfephpException($msg, self::STOP_MESSAGE);
             }
-            $cStat = !empty($doc->getElementsByTagName('cStat')->item(0)->nodeValue) ? $doc->getElementsByTagName('cStat')->item(0)->nodeValue : '';
-            $versao= !empty($doc->getElementsByTagName('versaoDados')->item(0)->nodeValue) ? $doc->getElementsByTagName('versaoDados')->item(0)->nodeValue : '';
+            $cStat = !empty($doc->getElementsByTagName('cStat')->item(0)->nodeValue) ?
+                    $doc->getElementsByTagName('cStat')->item(0)->nodeValue : '';
+            $versao= !empty($doc->getElementsByTagName('versaoDados')->item(0)->nodeValue) ?
+                    $doc->getElementsByTagName('versaoDados')->item(0)->nodeValue : '';
             if (($cStat == '239' || $cStat == '238') && $versao != $versaodefault) {
                 //realmente as versões estão diferentes => corrigir
                 $nfews = $this->raizDir . 'config' . DIRECTORY_SEPARATOR . $this->xmlURLfile;
@@ -3317,8 +3438,9 @@ class NFePHP
                             $objElem->$sAmbiente->$servico->attributes()->version = "$versao";
                             //grava o xml alterado
                             if (!file_put_contents($nfews, $objxml->asXML())) {
-                                $msg = "A versão do serviço $servico de $UF [$sAmbiente] no arquivo $nfews não foi corrigida.";
-                                throw new Exception\NfephpException($msg, self::STOP_MESSAGE);
+                                $msg = "A versão do serviço $servico de $UF [$sAmbiente] no arquivo 
+                                        $nfews não foi corrigida.";
+                                throw new Exception\NfephpException($msg);
                             } else {
                                 break;
                             }//fim file_put
@@ -3333,152 +3455,4 @@ class NFePHP
         }
         return true;
     }//fim trata 239
-
-    /**
-     *
-     */
-    public function updateWsdl()
-    {
-        $wsFile = '../config/nfe_ws2.xml';
-        $xml = file_get_contents($wsFile);
-        //converte o xml em array
-        $ws = XML2Array::createArray($xml);
-        //para cada UF
-        foreach ($ws['WS']['UF'] as $uf) {
-            $sigla = $uf['sigla'];
-            $ambiente = array('homologacao','producao');
-            //para cada ambiente
-            foreach ($ambiente as $amb) {
-                $h = $uf[$amb];
-                if (isset($h)) {
-                    foreach ($h as $k => $j) {
-                        $nome = $k;
-                        $url=$j['@value'];
-                        $metodo=$j['@attributes']['method'];
-                        $versao = $j['@attributes']['version'];
-                        if ($url != '') {
-                            $aS[] = $sigla;
-                            $aA[] = $amb;
-                            $aN[] = $nome;
-                            $aU[] = $url.'?wsdl';
-                            $aM[] = $metodo;
-                            $aV[] = $versao;
-                        }
-                    }
-                }
-            }
-        }
-    }//fim downLoadWsdl
-
-    public function typeXml()
-    {
-        $xmlfile = file_get_contents($filename);
-        $xml = simplexml_load_string($xmlfile);
-        $tagroot = $xml->getName();
-        switch ($tagroot){
-            case 'NFe':
-                //NFe sem protocolo
-                break;
-            case 'nfeProc':
-                //NFe com o protocolo
-                break;
-            case 'CTe':
-                //CTe sem protocolo
-                break;
-            case 'cteProc':
-                //CTe com o protocolo
-                break;
-            case 'evento':
-                //evento sem o protocolo
-                break;
-            case 'envEvento':
-                //Envio de evento
-                break;
-            case 'retEnvEvento':
-                //Retorno de evento
-                break;
-            case 'procEventoNFe':
-                //Evento com o protocolo
-                break;
-            case 'ConsCad':
-                //consulta de cadastro
-                break;
-            case 'consReciNFe':
-                //consulta recibo
-                break;
-            case 'retConsReciNFe':
-                //retorno da consulta do recibo
-                break;
-            case 'cancNFe':
-                //solicitação de cancelamento - DEPRECATE
-                break;
-            case 'retCancNFe':
-                //retorno da solicitação de cancelamento - DEPRECATE
-                break;
-            case 'inutNFe':
-                //solicitação de inutilização
-                break;
-            case 'retInutNFe':
-                //retorno da solicitação de inutilização
-                break;
-            case 'consSitNFe':
-                //consulta da situação da NFe
-                break;
-            case 'retConsSitNFe':
-                //retorno da consulta da situação da NFe
-                break;
-            case 'consStatServ':
-                //consulta do status do serviço
-                break;
-            case 'retConsStatServ':
-                //retorno da consulta do status do serviço
-                break;
-        }
-    }//fim tipo xml
-
-    public function findXsd($xml)
-    {
-        //pegar o elemento
-        //pegar a versão
-
-        $aXSD = array(
-            'cancNFe'=>'cancNFe_v',
-            'CCe' => 'CCe_v',
-            '' => 'confRecebto_v',
-            '' => 'consCad_v',
-            '' => 'consNFeDest_v',
-            '' => 'consReciNFe_v',
-            '' => 'consSitNFe_v',
-            '' => 'consSitNFe_v',
-            '' => 'consStatServ_v',
-            '' => 'downloadNFe_v',
-            '' => 'envCCe_v',
-            '' => 'envConfRecebto_v',
-            '' => 'envEvento_v',
-            '' => 'enviNFe_v',
-            '' => 'inutNFe_v',
-            '' => 'nfe_v',
-            '' => 'procCancNFe_v',
-            '' => 'procCCeNFe_v',
-            '' => 'procConfRecebtoNFe_v',
-            '' => 'procEventoNFe_v',
-            '' => 'procInutNFe_v',
-            '' => 'procNFe_v',
-            '' => 'retCancNFe_v',
-            '' => 'retConsCad_v',
-            '' => 'retconsNFeDest_v',
-            '' => 'retConsReciNFe_v',
-            '' => 'retConsSitNFe_v',
-            '' => 'retConsSitNFe_v',
-            '' => 'retConsStatServ_v',
-            '' => 'retDownloadNFe_v',
-            '' => 'retEnvCCe_v',
-            '' => 'retEnvConfRecebto_v',
-            '' => 'retEnvEvento_v',
-            '' => 'retEnviNFe_v',
-            '' => 'retInutNFe_v'
-        );
-
-
-    }
 }
