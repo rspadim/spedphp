@@ -1773,8 +1773,8 @@ class Pkcs12Certs
         $ret = array();
         //se count($partes) > 1 então o OID foi localizado no certificado
         if (count($partes)>1) {
-            //O inicio da sequencia que nos interessa pode estar a 3 ou 2 digitos 
-            //antes do inicio da OID, isso depende do numero de bytes usados para 
+            //O inicio da sequencia que nos interessa pode estar a 3 ou 2 digitos
+            //antes do inicio da OID, isso depende do numero de bytes usados para
             //identificar o tamanho da sequencia
             for ($i=1; $i<count($partes); $i++) {
                 //recupera da primeira parte os 4 últimos digitos na parte sem o OID
@@ -1796,8 +1796,8 @@ class Pkcs12Certs
                         $xcv = $xcv2;
                     }
                 }
-                //reconstroi a sequencia, marca do tamanho do campo, OID e 
-                //a parte do certificado com o OID 
+                //reconstroi a sequencia, marca do tamanho do campo, OID e
+                //a parte do certificado com o OID
                 $data = $xcv . $oid_hexa . $partes[$i];
                 //converte para decimal, o segundo digito da sequencia
                 $len = ord($data[1]);
