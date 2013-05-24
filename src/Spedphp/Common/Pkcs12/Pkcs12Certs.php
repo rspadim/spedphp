@@ -88,7 +88,6 @@ class Pkcs12Certs
         } catch (NfephpException $e) {
             $this->errorMsg = ($e->getMessage());
             throw new \Exception($msg);
-            return false;
         }
         return true;
     }
