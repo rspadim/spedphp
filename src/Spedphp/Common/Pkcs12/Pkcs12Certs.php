@@ -44,7 +44,6 @@ class Pkcs12Certs
      * @param string $pfxName   Nome do arquivo pfrx colocado no diretório acima indicado
      * @param string $keyPass   Senha para acesso aos dados do certificado digital
      * @param string $cnpj      CNPJ do proprietário do certificado
-     * @throws Exception\NfephpException
      */
     public function __construct($dir = '', $pfxName = '', $keyPass = '', $cnpj = '')
     {
@@ -59,6 +58,14 @@ class Pkcs12Certs
         
     }//fim __construct
     
+    /**
+     * validParam
+     * valida os parametros passados para a classe
+     * 
+     * @return boolean 
+     * @throws \Exception
+     * @throws NfephpException
+     */
     private function validParam()
     {
         try {
@@ -523,7 +530,8 @@ class Pkcs12Certs
         $arCert = explode("\n", $pubKey);
         foreach ($arCert as $curData) {
             //remove a tag de inicio e fim do certificado
-            if (strncmp($curData, '-----BEGIN CERTIFICATE', 22) != 0 && strncmp($curData, '-----END CERTIFICATE', 20) != 0 ) {
+            if (strncmp($curData, '-----BEGIN CERTIFICATE', 22) != 0 &&
+                    strncmp($curData, '-----END CERTIFICATE', 20) != 0 ) {
                 //carrega o resultado numa string
                 $data .= trim($curData);
             }
@@ -1382,7 +1390,8 @@ class Pkcs12Certs
             '2.16.76.1.2.4.3' => 'Política de Certificado de Assinatura Digital do Tipo A4
                 da  Autoridade Certificadora CertiSign Múltipla na Infra­estrutura de Chaves Públicas Brasileira',
             '2.16.76.1.2.4.4' => 'Política de Certificado de Assinatura Digital Tipo A4
-                da Autoridade Certificadora CertiSign para a Secretaria da Receita Federal na Infra­estrutura de Chaves Públicas Brasileira',
+                da Autoridade Certificadora CertiSign para a Secretaria da 
+                Receita Federal na Infra­estrutura de Chaves Públicas Brasileira',
             '2.16.76.1.2.4.5' => 'Política de Certificado de Assinatura Digital Tipo A4
                 da Autoridade Certificadora Imprensa Oficial ­ SP',
             '2.16.76.1.2.4.6' => 'Política de Certificado de Assinatura Digital Tipo A4
@@ -1437,7 +1446,8 @@ class Pkcs12Certs
                 da Autoridade Certificadora CertiSign Múltipla',
             '2.16.76.1.2.104.4' => 'Política de Certificado de Sigilo Tipo S4
                 da Autoridade Certificadora Imprensa Oficial ­ SP',
-            '2.16.76.1.2.104.5' => 'Política de Certificado de Assinatura Digital Tipo S4 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.104.5' => 'Política de Certificado de Assinatura Digital 
+                Tipo S4 da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.104.6' => 'Política de Certificado Digital da AC SERASA­JUS para Certificados Tipo S4',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.201' => 'PC de AC',
