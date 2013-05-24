@@ -10,7 +10,7 @@
  * @package   NFePHP
  */
 
-namespace Common\Exception;
+namespace Spedphp\Common\Exception;
 
 /**
  * Classe complementar 

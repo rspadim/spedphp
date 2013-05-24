@@ -12,7 +12,7 @@
 
 namespace Spedphp\Common\Pkcs12;
 
-use Spedphp\Common\Exception;
+use Spedphp\Common\Exception\NfephpException;
 
 class Pkcs12Certs
 {
@@ -46,27 +46,27 @@ class Pkcs12Certs
      * @param string $cnpj      CNPJ do proprietário do certificado
      * @throws Exception\NfephpException
      */
-    public function __construct($certsDir = '', $pfxName = '', $keyPass = '', $cnpj = '')
+    public function __construct($dir = '', $pfxName = '', $keyPass = '', $cnpj = '')
     {
         try {
-            if ($certsDir == '') {
+            if ($dir == '' || !is_dir($dir)) {
                 $msg = "O caminho para os arquivos dos certificados deve ser passado!!";
-                throw new Exception\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if ($pfxName == '') {
                 $msg = "O nome do certificado .pfx deve ser passado!!";
-                throw new Exception\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if ($keyPass == '') {
                 $msg = "A senha do certificado .pfx deve ser passado!!";
-                throw new Exception\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if ($cnpj == '') {
                 $msg = "O numero do CNPJ do certificado deve ser passado!!";
-                throw new Exception\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             //limpar bobagens
-            $certsDir = trim($certsDir);
+            $certsDir = trim($dir);
             $pfxName = trim($pfxName);
             $keyPass = trim($keyPass);
             $cnpj = trim($cnpj);
@@ -76,14 +76,14 @@ class Pkcs12Certs
             }
             if (!file_exists($certsDir . $pfxName)) {
                 $msg = "O arquivo do certificado pfx não foi encontrado!!";
-                throw new Exception\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             $this->certsDir = $certsDir;
             $this->pfxName = $pfxName;
             $this->keyPass = $keyPass;
             $this->cnpj = $cnpj;
-        } catch (Exception\NfephpException $e) {
-            $this->errorMsg = ($e->getMessage());
+        } catch (NfephpException $e) {
+            //$this->errorMsg = ($e->getMessage());
             //return false;
         }
         //return true;
@@ -134,27 +134,27 @@ class Pkcs12Certs
             //o path foram carregados nas variaveis da classe
             if ($this->certsDir == '' || $this->pfxName == '') {
                 $msg = "Um certificado deve ser passado para a classe pelo arquivo de configuração!! ";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             //monta o caminho completo até o certificado pfx
             $pfxCert = $this->certsDir.$this->pfxName;
             //verifica se o arquivo existe
             if (!file_exists($pfxCert)) {
                 $msg = "Certificado não encontrado!! $pfxCert";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             //carrega o certificado em um string
             $pfxContent = file_get_contents($pfxCert);
             //carrega os certificados e chaves para um array denominado $x509certdata
             if (!openssl_pkcs12_read($pfxContent, $x509certdata, $this->keyPass)) {
                 $msg = "O certificado não pode ser lido!! Provavelmente corrompido ou com formato inválido!!";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if ($testaVal) {
                 //verifica sua validade
                 if (!$aResp = $this->validCerts($x509certdata['cert'])) {
                     $msg = "Certificado invalido!! - " . $aResp['error'];
-                    throw new Common\NfephpException($msg);
+                    throw new NfephpException($msg);
                 }
             }
             //aqui verifica se existem as chaves em formato PEM
@@ -213,12 +213,12 @@ class Pkcs12Certs
                 //recriar os arquivos pem com o arquivo pfx
                 if (!file_put_contents($this->priKEY, $x509certdata['pkey'])) {
                     $msg = "Impossivel gravar no diretório!!! Permissão negada!!";
-                    throw new Common\NfephpException($msg);
+                    throw new NfephpException($msg);
                 }
                 $n = file_put_contents($this->pubKEY, $x509certdata['cert']);
                 $n = file_put_contents($this->certKEY, $x509certdata['pkey']."\r\n".$x509certdata['cert']);
             }
-        } catch (Common\NfephpException $e) {
+        } catch (NfephpException $e) {
             return false;
         }
         return true;
@@ -244,11 +244,11 @@ class Pkcs12Certs
         try {
             if ($cert == '') {
                 $msg = "O certificado é um parâmetro obrigatorio.";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if (!$data = openssl_x509_read($cert)) {
                 $msg = "O certificado não pode ser lido pelo SSL - $cert .";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             $flagOK = true;
             $errorMsg = "";
@@ -283,7 +283,7 @@ class Pkcs12Certs
             $this->certDaysToExpire = $daysToExpire;
             $this->pfxTimestamp = $dValid;
             $aRetorno = array('status'=>$flagOK,'error'=>$errorMsg,'meses'=>$monthsToExpire,'dias'=>$daysToExpire);
-        } catch (Common\NfephpException $e) {
+        } catch (NfephpException $e) {
             return false;
         }
         return true;
@@ -306,7 +306,7 @@ class Pkcs12Certs
             //carregar a chave publica do arquivo pem
             if (!$pubKey = file_get_contents($certFile)) {
                 $msg = "Arquivo não encontrado - $certFile .";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             //carrega o certificado em um array usando o LF como referencia
             $arCert = explode("\n", $pubKey);
@@ -317,7 +317,7 @@ class Pkcs12Certs
                     $data .= trim($curData);
                 }
             }
-        } catch (Common\NfephpException $e) {
+        } catch (NfephpException $e) {
             return false;
         }
         return $data;
@@ -341,11 +341,11 @@ class Pkcs12Certs
         try {
             if ($tagid == '') {
                 $msg = "Uma tag deve ser indicada para que seja assinada!!";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if ($docxml == '') {
                 $msg = "Um xml deve ser passado para que seja assinado!!";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             if (is_file($docxml)) {
                 $xml = file_get_contents($docxml);
@@ -384,13 +384,13 @@ class Pkcs12Certs
                     }
                     libxml_clear_errors();
                 }
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             //extrair a tag com os dados a serem assinados
             $node = $xmldoc->getElementsByTagName($tagid)->item(0);
             if (!isset($node)) {
                 $msg = "A tag < $tagid > não existe no XML!!";
-                throw new Common\NfephpException($msg);
+                throw new NfephpException($msg);
             }
             $id = trim($node->getAttribute("Id"));
             $idnome = preg_replace('/[^0-9]/', '', $id);
@@ -461,7 +461,7 @@ class Pkcs12Certs
             $xml = $xmldoc->saveXML();
             // libera a memoria
             openssl_free_key($pkeyid);
-        } catch (Common\NfephpException $e) {
+        } catch (NfephpException $e) {
             return false;
         }
         //retorna o documento assinado
@@ -529,7 +529,7 @@ class Pkcs12Certs
                 $err = $msg;
                 return false;
             }
-        } catch (Common\NfephpException $e) {
+        } catch (NfephpException $e) {
             return false;
         }
         return true;
@@ -1268,126 +1268,179 @@ class Pkcs12Certs
             '2.16.76.1.1.17' => 'DPC da Autoridade Certificadora Imprensa Oficial ­ SP',
             '2.16.76.1.1.18' => 'DPC da Autoridade Certificadora PRODEMGE',
             '2.16.76.1.1.19' => 'DPC da Autoridade Certificadora do Sistema Justiça Federal - AC­JUS',
-            '2.16.76.1.1.20' => 'Declaração   de   Práticas   de   Certificação   da   Autoridade   Certificadora   do SERPRO Final - DPC SERPRO ACF',
+            '2.16.76.1.1.20' => 'Declaração de Práticas de Certificação  
+                da Autoridade Certificadora do SERPRO Final - DPC SERPRO ACF',
             '2.16.76.1.1' => 'DPC',
             '2.16.76.1.1.21' => 'Declaração de Práticas de Certificação da Autoridade Certificadora SINCOR',
-            '2.16.76.1.1.22' => 'Declaração de Práticas de Certificação da Autoridade Certificadora Imprensa Oficial SP SRF',
+            '2.16.76.1.1.22' => 'Declaração de Práticas de Certificação 
+                da Autoridade Certificadora Imprensa Oficial SP SRF',
             '2.16.76.1.1.23' => 'Declaração de Práticas de Certificação da AC FENACOR',
             '2.16.76.1.1.24' => 'Declaração de Práticas de Certificação da Autoridade Certificadora SERPRO­ JUS',
             '2.16.76.1.1.25' => 'DPC da AC Caixa Justiça',
             '2.16.76.1.1.26' => 'DPC da Autoridade Certificadora Imprensa Oficial SP (AC IMESP)',
             '2.16.76.1.1.27' => 'DPC da Autoridade Certificadora PRODEMGE SRF',
-            '2.16.76.1.1.28' => 'Declaração de Práticas de Certificação da Autoridade Certificadora CertSign  para a Justiça',
+            '2.16.76.1.1.28' => 'Declaração de Práticas de Certificação 
+                da Autoridade Certificadora CertSign  para a Justiça',
             '2.16.76.1.1.29' => 'DPC da AC SERASA JUS',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.1' => 'A1',
-            '2.16.76.1.2.1.1' => 'Política de Certificados da ACSERPRO para certificados SERPRO­SPB ­ PC SERPRO­SPB',
+            '2.16.76.1.2.1.1' => 'Política de Certificados da ACSERPRO para 
+                certificados SERPRO­SPB ­ PC SERPRO­SPB',
             '2.16.76.1.2.1.2' => 'Política de Certificados para certificados da SERASA Autoridade Certificadora',
-            '2.16.76.1.2.1.3' => 'Política   de   Certificados   da   Autoridade   Certificadora   da   Presidência   da República - PCA1',
-            '2.16.76.1.2.1.4' => 'Política   de   Certificado   da   Autoridade   Certificadora   CertiSign   Certificadora Digital para o Sistema de Pagamentos Brasileiro na ICP­Brasil­ PC da AC CertiSign SPB na ICP­Brasil',
+            '2.16.76.1.2.1.3' => 'Política   de   Certificados   da   Autoridade   
+                Certificadora   da   Presidência   da República - PCA1',
+            '2.16.76.1.2.1.4' => 'Política   de   Certificado   da   Autoridade   
+                Certificadora   CertiSign   Certificadora Digital para o Sistema de Pagamentos Brasileiro na ICP­Brasil­ PC da AC CertiSign SPB na ICP­Brasil',
             '2.16.76.1.2.1.5' => 'Política de Certificados SEPROA1',
             '2.16.76.1.2.1.6' => 'Política de Certificado Digital para Certificado de Assinatura Digital Tipo A1 -  SERASA CD',
             '2.16.76.1.2.1.7' => 'Política de Certificado de Assinatura Digital do Tipo A1 da AC Caixa IN',
-            '2.16.76.1.2.1.8' => 'Política de Certificado de Assinatura Digital do Tipo A1 da AC Caixa PF',
-            '2.16.76.1.2.1.9' => 'Política de Certificado de Assinatura Digital do Tipo A1 da AC Caixa PJ',
+            '2.16.76.1.2.1.8' => 'Política de Certificado de Assinatura Digital do
+                Tipo A1 da AC Caixa PF',
+            '2.16.76.1.2.1.9' => 'Política de Certificado de Assinatura Digital do
+                Tipo A1 da AC Caixa PJ',
             '2.16.76.1.2.1.10' => 'Política de Certificados  da  Autoridade  Certificadora  do  Serpro­SRF  para certificados de assinatura digital do tipo A1 (PCSerpro­SRFA1)',
-            '2.16.76.1.2.1.11' => 'Política de  Certificado de  Assinatura Digital do Tipo  A1 da  Autoridade  Certificadora  CertiSign  Múltipla  na  Infra­estrutura  de  Chaves  Públicas  Brasileira',
+            '2.16.76.1.2.1.11' => 'Política de  Certificado de  Assinatura Digital do
+                Tipo  A1 da  Autoridade  Certificadora  CertiSign  Múltipla  na  Infra­estrutura  de  Chaves  Públicas  Brasileira',
             '2.16.76.1.2.1.12' => 'Política  de  Certificado  de   Assinatura   Digital   Tipo   A1   da   Autoridade  Certificadora CertiSign para a Secretaria da Receita Federal',
             '2.16.76.1.2.1.13' => 'Política de Certificado de Assinatura Digital Tipo A1 da AC SERASA SRF',
-            '2.16.76.1.2.1.14' => 'Política  de Certificado  de  Assinatura   Digital   Tipo  A1  da  Autoridade Certificadora Imprensa Oficial ­ SP',
-            '2.16.76.1.2.1.15' => 'Política  de  Certificado  de  Assinatura   Digital  Tipo  A1  da  Autoridade  Certificadora PRODEMGE',
+            '2.16.76.1.2.1.14' => 'Política  de Certificado  de  Assinatura   Digital
+                Tipo  A1  da  Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.1.15' => 'Política  de  Certificado  de  Assinatura   Digital
+                Tipo  A1  da  Autoridade  Certificadora PRODEMGE',
             '2.16.76.1.2.1.16' => 'Política de Certificados SERPRO do Tipo A1 - PC SERPRO ACF A1',
             '2.16.76.1.2.1.17' => 'Política de Certificados do SERPRO - SPB - PC SERPRO ACF SPB',
-            '2.16.76.1.2.1.18' => 'Política  de  Certificado  de  Assinatura  Digital  Tipo  A1  da  Autoridade Certificadora SINCOR',
-            '2.16.76.1.2.1.19' => 'Política de Certificado  de  Assinatura  Digital  Tipo  A1  da  Autoridade Certificadora SINCOR para Corretores de Seguros',
+            '2.16.76.1.2.1.18' => 'Política  de  Certificado  de  Assinatura  Digital  
+                Tipo  A1  da  Autoridade Certificadora SINCOR',
+            '2.16.76.1.2.1.19' => 'Política de Certificado  de  Assinatura  Digital  Tipo  A1
+                da  Autoridade Certificadora SINCOR para Corretores de Seguros',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.1' => 'A1',
-            '2.16.76.1.2.1.20' => 'Política  de  Certificado  de  Assinatura  Digital  Tipo  A1  da  Autoridade Certificadora Imprensa Oficial SP SRF',
+            '2.16.76.1.2.1.20' => 'Política  de  Certificado  de  Assinatura  Digital
+                Tipo  A1  da  Autoridade Certificadora Imprensa Oficial SP SRF',
             '2.16.76.1.2.1.21' => 'Política de Certificados SERPRO­JUS do tipo A1 ­ PCSERPROJUSA1',
             '2.16.76.1.2.1.22' => 'Política de Certificado de Assinatura Digital do Tipo A1 da AC Caixa Justiça',
-            '2.16.76.1.2.1.23' => 'Política  de Certificado de  Assinatura  Tipo  A1 da  Autoridade  Certificadora PRODEMGE SRF',
-            '2.16.76.1.2.1.24' => 'Política de Certificado de Assinatura Digital Tipo A1 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.1.23' => 'Política  de Certificado de  Assinatura  Tipo  A1
+                da  Autoridade  Certificadora PRODEMGE SRF',
+            '2.16.76.1.2.1.24' => 'Política de Certificado de Assinatura Digital Tipo A1
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.1.25' => 'Política de Certificado Digital da AC  SERASA­JUS para Certificados Tipo A1',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.2' => 'A2',
-            '2.16.76.1.2.2.1' => 'Política de Certificado Digital para Certificado de Assinatura Digital  Tipo A2 - SERASA CD',
-            '2.16.76.1.2.2.2' => 'Política de Certificado Digital para Certificado de Assinatura Digital Tipo A2 da AC SERASA SRF',
-            '2.16.76.1.2.2.3' => 'Política de Certificado de Assinatura Digital do Tipo A2 da Autoridade  Certificadora  CertiSign  últipla  na  Infra­estrutura  de Chaves Públicas Brasileira',
-            '2.16.76.1.2.2.4' => 'Política de Certificado de Assinatura Digital do Tipo A2 da Autoridade Certificadora Imprensa Oficial ­ SP',
-            '2.16.76.1.2.2.5' => 'Política de Certificado de Assinatura Digital do Tipo A2 da AC Caixa Justiça',
-            '2.16.76.1.2.2.6' => 'Política de Certificado de Assinatura Digital Tipo A2 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.2.1' => 'Política de Certificado Digital para Certificado
+                de Assinatura Digital  Tipo A2 - SERASA CD',
+            '2.16.76.1.2.2.2' => 'Política de Certificado Digital para Certificado
+                de Assinatura Digital Tipo A2 da AC SERASA SRF',
+            '2.16.76.1.2.2.3' => 'Política de Certificado de Assinatura Digital do Tipo A2
+                da Autoridade  Certificadora  CertiSign  últipla  na  Infra­estrutura  de Chaves Públicas Brasileira',
+            '2.16.76.1.2.2.4' => 'Política de Certificado de Assinatura Digital do Tipo A2
+                da Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.2.5' => 'Política de Certificado de Assinatura Digital do Tipo A2
+                da AC Caixa Justiça',
+            '2.16.76.1.2.2.6' => 'Política de Certificado de Assinatura Digital Tipo A2
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.2.7' => 'Política de Certificado Digital da AC SERASA­JUS para Certificados Tipo A2',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.3' => 'A3',
-            '2.16.76.1.2.3.1' => 'Política de Certificados da Autoridade Certificadora da Presidência da República - PC ACPR',
-            '2.16.76.1.2.3.2' => 'Política  de  Certificados   da  Autoridade  Certificadora do  SERPRO para certificados SERPRO do tipo A3 - PCSERPROA3',
-            '2.16.76.1.2.3.3' => 'Política de Certificado Digital para Certificado de Assinatura Digital Tipo A3 - SERASA CD',
-            '2.16.76.1.2.3.4' => 'Política de Certificados da Autoridade Certificadora do Serpro­SRF para certificados de assinatura digital do tipo A3 (PCSerpro­SRFA3)',
-            '2.16.76.1.2.3.5' => 'Política de Certificado de Assinatura Digital do Tipo A3 da  Autoridade Certificadora CertiSign Múltipla na Infra­estrutura de Chaves Públicas Brasileira',
-            '2.16.76.1.2.3.6' => 'Política de Certificado de Assinatura Digital Tipo A3 da Autoridade Certificadora CertiSign para a Secretaria da Receita Federal na Infra­estrutura de Chaves Públicas Brasileira',
+            '2.16.76.1.2.3.1' => 'Política de Certificados da Autoridade Certificadora 
+                da Presidência da República - PC ACPR',
+            '2.16.76.1.2.3.2' => 'Política  de  Certificados   da  Autoridade  Certificadora
+                do  SERPRO para certificados SERPRO do tipo A3 - PCSERPROA3',
+            '2.16.76.1.2.3.3' => 'Política de Certificado Digital para Certificado de 
+                Assinatura Digital Tipo A3 - SERASA CD',
+            '2.16.76.1.2.3.4' => 'Política de Certificados da Autoridade Certificadora do
+                Serpro­SRF para certificados de assinatura digital do tipo A3 (PCSerpro­SRFA3)',
+            '2.16.76.1.2.3.5' => 'Política de Certificado de Assinatura Digital do Tipo A3
+                da  Autoridade Certificadora CertiSign Múltipla na Infra­estrutura de Chaves Públicas Brasileira',
+            '2.16.76.1.2.3.6' => 'Política de Certificado de Assinatura Digital Tipo A3
+                da Autoridade Certificadora CertiSign para a Secretaria da Receita Federal na Infra­estrutura de Chaves Públicas Brasileira',
             '2.16.76.1.2.3.7' => 'Política de Certificado de Assinatura Digital do Tipo A3 da AC Caixa  IN',
             '2.16.76.1.2.3.8' => 'Política de Certificado de Assinatura Digital do Tipo A3 da AC Caixa  PF',
             '2.16.76.1.2.3.9' => 'Política de Certificado de Assinatura Digital do Tipo A3 da AC Caixa   PJ',
             '2.16.76.1.2.3.10' => 'Política de Certificado de Assinatura Digital do Tipo A3 da AC SERASA SRF',
             '2.16.76.1.2.3.11' => 'Política de Certificado de Assinatura Digital do Tipo A3 da  Autoridade Certificadora  Imprensa Oficial ­ SP',
-            '2.16.76.1.2.3.12' => 'Política de Certificado de Assinatura Digital do Tipo A3 da  Autoridade Certificadora PRODEMGE',
+            '2.16.76.1.2.3.12' => 'Política de Certificado de Assinatura Digital do Tipo A3
+                da  Autoridade Certificadora PRODEMGE',
             '2.16.76.1.2.3.13' => 'Política de Certificados SERPRO do Tipo A3 - PC SERPRO A3',
-            '2.16.76.1.2.3.14' => 'Política de Certificado de Assinatura Digital Tipo A3 da Autoridade Certificadora SINCOR',
-            '2.16.76.1.2.3.15' => 'Política de Certificado de Assinatura Digital Tipo A3 da Autoridade  Certificadora SINCOR para Corretores de Seguros',
-            '2.16.76.1.2.3.16' => 'Política de Certificado de Assinatura Digital Tipo A3 da Autoridade  Certificadora Imprensa Oficial SP SRF',
+            '2.16.76.1.2.3.14' => 'Política de Certificado de Assinatura Digital Tipo A3 
+                da Autoridade Certificadora SINCOR',
+            '2.16.76.1.2.3.15' => 'Política de Certificado de Assinatura Digital Tipo A3
+                da Autoridade  Certificadora SINCOR para Corretores de Seguros',
+            '2.16.76.1.2.3.16' => 'Política de Certificado de Assinatura Digital Tipo A3
+                da Autoridade  Certificadora Imprensa Oficial SP SRF',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.3' => 'A3',
             '2.16.76.1.2.3.17' => 'Política de Certificado da AC FENACOR A3',
             '2.16.76.1.2.3.18' => 'Política de Certificados SERPRO­JUS do tipo A3 PCSERPROJUSA3',
-            '2.16.76.1.2.3.19' => 'Política de Certificado de Assinatura Digital do Tipo A3 da AC Caixa Justiça',
-            '2.16.76.1.2.3.20' => 'Política de Certificado de Assinatura Tipo A3 da Autoridade Certificadora PRODEMGE SRF',
-            '2.16.76.1.2.3.21' => 'Política de Certificado de Assinatura Digital Tipo A3 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.3.19' => 'Política de Certificado de Assinatura Digital do Tipo A3
+                da AC Caixa Justiça',
+            '2.16.76.1.2.3.20' => 'Política de Certificado de Assinatura Tipo A3 da
+                Autoridade Certificadora PRODEMGE SRF',
+            '2.16.76.1.2.3.21' => 'Política de Certificado de Assinatura Digital Tipo A3
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.3.22' => 'Política de Certificado Digital da AC SERASA­JUS para Certificados Tipo A3',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.4' => 'A4',
-            '2.16.76.1.2.4.1' => 'Política de Certificado Digital para Certificado de Assinatura Digital  Tipo A4 - SERASA CD;',
+            '2.16.76.1.2.4.1' => 'Política de Certificado Digital para Certificado de Assinatura Digital
+                Tipo A4 - SERASA CD;',
             '2.16.76.1.2.4.2' => 'VAGO',
-            '2.16.76.1.2.4.3' => 'Política de Certificado de Assinatura Digital do Tipo A4 da  Autoridade Certificadora CertiSign Múltipla na Infra­estrutura de Chaves Públicas Brasileira',
-            '2.16.76.1.2.4.4' => 'Política de Certificado de Assinatura Digital Tipo A4 da Autoridade Certificadora CertiSign para a Secretaria da Receita Federal na Infra­estrutura de Chaves Públicas Brasileira',
-            '2.16.76.1.2.4.5' => 'Política de Certificado de Assinatura Digital Tipo A4 da Autoridade Certificadora Imprensa Oficial ­ SP',
-            '2.16.76.1.2.4.6' => 'Política de Certificado de Assinatura Digital Tipo A4 da Autoridade Certificadora Imprensa Oficial - SP SRF',
-            '2.16.76.1.2.4.7' => 'Política de Certificado de Assinatura Tipo A4 da Autoridade Certificadora PRODEMGE SRF',
-            '2.16.76.1.2.4.8' => 'Política de Certificado de Assinatura Digital Tipo A4 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.4.3' => 'Política de Certificado de Assinatura Digital do Tipo A4
+                da  Autoridade Certificadora CertiSign Múltipla na Infra­estrutura de Chaves Públicas Brasileira',
+            '2.16.76.1.2.4.4' => 'Política de Certificado de Assinatura Digital Tipo A4
+                da Autoridade Certificadora CertiSign para a Secretaria da Receita Federal na Infra­estrutura de Chaves Públicas Brasileira',
+            '2.16.76.1.2.4.5' => 'Política de Certificado de Assinatura Digital Tipo A4
+                da Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.4.6' => 'Política de Certificado de Assinatura Digital Tipo A4
+                da Autoridade Certificadora Imprensa Oficial - SP SRF',
+            '2.16.76.1.2.4.7' => 'Política de Certificado de Assinatura Tipo A4
+                da Autoridade Certificadora PRODEMGE SRF',
+            '2.16.76.1.2.4.8' => 'Política de Certificado de Assinatura Digital Tipo A4
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.4.9' => 'VAGO',
             '2.16.76.1.2.4.10' => 'Política de Certificado Digital  a  AC SERASA­JUS  para Certificados Tipo A4',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.101' => 'S1',
             '2.16.76.1.2.101.1' => 'Política de Certificado Digital para Certificado de Sigilo Tipo S1-SERASA CD',
-            '2.16.76.1.2.101.2' => 'Política de Certificado de Sigilo Tipo S1 da Autoridade Certificadora Imprensa Oficial ­ SP',
-            '2.16.76.1.2.101.3' => 'Política de Certificado de Sigilo do Tipo S1 da Autoridade Certificadora CertiSign Múltipla',
+            '2.16.76.1.2.101.2' => 'Política de Certificado de Sigilo Tipo S1
+                da Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.101.3' => 'Política de Certificado de Sigilo do Tipo S1 
+                da Autoridade Certificadora CertiSign Múltipla',
             '2.16.76.1.2.101.4' => 'Política de Certificado de Sigilo do Tipo S1 da Autoridade Certificadora PRODEMGE',
             '2.16.76.1.2.101.5' => 'Política de Certificado de Assinatura Digital do Tipo S1 da AC Caixa Justiça',
-            '2.16.76.1.2.101.6' => 'Política de Certificado de Assinatura Digital Tipo S1 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.101.6' => 'Política de Certificado de Assinatura Digital Tipo S1
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.101.7' => 'Política de Certificado Digital da AC SERASA­JUS para Cerficados Tipo S1',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.102' => 'S2',
             '2.16.76.1.2.102.1' => 'Política de Certificado Digital para Certificado de Sigilo Tipo S2 - SERASA CD',
-            '2.16.76.1.2.102.2' => 'Política de Certificado de Sigilo Tipo S2 da Autoridade Certificadora Imprensa Oficial ­ SP',
-            '2.16.76.1.2.102.3' => 'Política de Certificado de Sigilo do Tipo S2 da Autoridade Certificadora CertiSign Múltipla',
+            '2.16.76.1.2.102.2' => 'Política de Certificado de Sigilo Tipo S2
+                da Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.102.3' => 'Política de Certificado de Sigilo do Tipo S2
+                da Autoridade Certificadora CertiSign Múltipla',
             '2.16.76.1.2.102.4' => 'Política de Certificado de Assinatura Digital do Tipo S2 da AC Caixa Justiça',
-            '2.16.76.1.2.102.5' => 'Política de Certificado de Assinatura Digital Tipo S2 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.102.5' => 'Política de Certificado de Assinatura Digital Tipo S2
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.102.6' => 'Política de Certificado Digital da AC SERASA­JUS para Certificados Tipo S2',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.103' => 'S3',
             '2.16.76.1.2.103.1' => 'Política de Certificado Digital para Certificado de Sigilo Tipo S3 -  SERASA CD',
             '2.16.76.1.2.103.2' => 'VAGO',
-            '2.16.76.1.2.103.3' => 'Política de Certificado de Sigilo do Tipo S3 da Autoridade Certificadora CertiSign Múltipla',
-            '2.16.76.1.2.103.4' => 'Política de Certificado de Sigilo Tipo S3 da Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.103.3' => 'Política de Certificado de Sigilo do Tipo S3
+                da Autoridade Certificadora CertiSign Múltipla',
+            '2.16.76.1.2.103.4' => 'Política de Certificado de Sigilo Tipo S3
+                da Autoridade Certificadora Imprensa Oficial ­ SP',
             '2.16.76.1.2.103.5' => 'Política de Certificado de Sigilo Tipo S3 da Autoridade Certificadora PRODEMGE',
             '2.16.76.1.2.103.6' => 'Política de Certificado de Assinatura Digital do Tipo S3 da AC Caixa Justiça',
-            '2.16.76.1.2.103.7' => 'Política de Certificado de Assinatura Digital Tipo S3 da Autoridade Certificadora CertiSign para a Justiça',
+            '2.16.76.1.2.103.7' => 'Política de Certificado de Assinatura Digital Tipo S3
+                da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.103.8' => 'Política de Certificado Digital da AC SERASA­JUS para Certificados Tipo S3',
             '2.16.76.1.2' => 'PC',
             '2.16.76.1.2.104' => 'S4',
             '2.16.76.1.2.104.1' => 'Política de Certificado Digital para Certificado de Sigilo Tipo S4 - SERASA CD',
             '2.16.76.1.2.104.2' => 'VAGO',
-            '2.16.76.1.2.104.3' => 'Política de Certificado de Sigilo do Tipo S4 da Autoridade Certificadora CertiSign Múltipla',
-            '2.16.76.1.2.104.4' => 'Política de Certificado de Sigilo Tipo S4 da Autoridade Certificadora Imprensa Oficial ­ SP',
+            '2.16.76.1.2.104.3' => 'Política de Certificado de Sigilo do Tipo S4
+                da Autoridade Certificadora CertiSign Múltipla',
+            '2.16.76.1.2.104.4' => 'Política de Certificado de Sigilo Tipo S4
+                da Autoridade Certificadora Imprensa Oficial ­ SP',
             '2.16.76.1.2.104.5' => 'Política de Certificado de Assinatura Digital Tipo S4 da Autoridade Certificadora CertiSign para a Justiça',
             '2.16.76.1.2.104.6' => 'Política de Certificado Digital da AC SERASA­JUS para Certificados Tipo S4',
             '2.16.76.1.2' => 'PC',
@@ -1703,7 +1756,7 @@ class Pkcs12Certs
 
     /**
      * getLength
-     * Obtem o comprimento do conteúdo de uma sequencia de dados do certificado
+     * Obtêm o comprimento do conteúdo de uma sequência de dados do certificado
      * 
      * @param numeric $len variável passada por referência
      * @param numeric $bytes variável passada por referência
@@ -1743,10 +1796,10 @@ class Pkcs12Certs
     {
         $begin = "CERTIFICATE-----";
         $end = "-----END";
-        //extrai o conteudo do certificado entre as marcas BEGIN e END
+        //extrai o conteúdo do certificado entre as marcas BEGIN e END
         $pem_data = substr($pem_data, strpos($pem_data, $begin) + strlen($begin));
         $pem_data = substr($pem_data, 0, strpos($pem_data, $end));
-        //converte para binário
+        //converte o resultado para binário obtendo um certificado em formato DER
         $der = base64_decode($pem_data);
         return $der;
     }//fim pem2Der
@@ -1758,17 +1811,17 @@ class Pkcs12Certs
      * Este método assume que a OID está inserida dentro de uma estrutura do
      * tipo "sequencia", como primeiro elemento da estrutura
      * 
-     * @param type $cert_der
-     * @param type $oid_number
-     * @return type
+     * @param string $cert_der
+     * @param string $oid_number
+     * @return array
      */
     protected static function getOIDdata($cert_der, $oid_number)
     {
         //converte onumero OTD de texto para hexadecimal
         $oid_hexa = self::oidtoHex($oid_number);
-        //Divide o certificado usando a OID como marcador,uma antes do OID e outra contendo o OID. 
+        //Divide o certificado usando a OID como marcador,uma antes do OID e outra contendo o OID.
         //Normalmente o certificado será dividido em duas partes, pois em geral existe
-        //apenas um OID de cada tipo no certificado, mas podem haver mais. 
+        //apenas um OID de cada tipo no certificado, mas podem haver mais.
         $partes = explode($oid_hexa, $cert_der);
         $ret = array();
         //se count($partes) > 1 então o OID foi localizado no certificado
@@ -1883,7 +1936,6 @@ class Pkcs12Certs
      */
     public function getCNPJCert($cert_pem)
     {
-        
         $der = self::pem2Der($cert_pem);
         $data = self::getOIDdata($der, '2.16.76.1.3.3');
         return $data[0][1][1][0][1];

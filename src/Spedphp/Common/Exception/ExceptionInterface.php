@@ -9,7 +9,7 @@
  * @package   NFePHP
  */
 
-namespace Common\Exception;
+namespace Spedphp\Common\Exception;
 
 /**
  * Exception interface for NFePHP
