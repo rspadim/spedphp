@@ -152,11 +152,8 @@ class Pkcs12Certs
                 $msg = "O certificado não pode ser lido!! Provavelmente corrompido ou com formato inválido!!";
                 throw new NfephpException($msg);
             }
-            //verifica sua validade
-            if (!$this->validCerts($x509certdata['cert'])) {
-                $msg = "Certificado invalido!! - " . $aResp['error'];
-                throw new NfephpException($msg);
-            }
+            //verifica sua data de validade
+            $this->validCerts($x509certdata['cert']);
             $cnpjCert = $this->getCNPJCert($x509certdata['cert']);
             if ($this->cnpj != $cnpjCert) {
                 $msg = "O Certificado informado pertence a outro CNPJ!!";
