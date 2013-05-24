@@ -12,7 +12,7 @@
 
 namespace Spedphp\Common\Pkcs12;
 
-use Common\Exception;
+use Spedphp\Common\Exception;
 
 class Pkcs12Certs
 {
