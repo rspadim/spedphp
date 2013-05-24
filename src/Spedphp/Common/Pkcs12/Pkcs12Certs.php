@@ -10,7 +10,7 @@
  * @package   NFePHP
  */
 
-namespace Common\Pkcs12;
+namespace Spedphp\Common\Pkcs12;
 
 use Common\Exception;
 
