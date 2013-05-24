@@ -19,7 +19,7 @@ class Pkcs12Certs
     
     public $certsDir;
     public $pfxName;
-    public $keyPass;
+    protected $keyPass;
     public $cnpj;
     public $pubKEY;
     public $priKEY;
@@ -48,46 +48,50 @@ class Pkcs12Certs
      */
     public function __construct($dir = '', $pfxName = '', $keyPass = '', $cnpj = '')
     {
+        //limpar bobagens
+        $this->certsDir = trim($dir);
+        $this->pfxName = trim($pfxName);
+        $this->keyPass = trim($keyPass);
+        $this->cnpj = trim($cnpj);
+        if ($this->validParam()) {
+            $this->loadCerts();
+        }
+        
+    }//fim __construct
+    
+    private function validParam()
+    {
         try {
-            if ($dir == '' || !is_dir($dir)) {
+            if ($this->certsDir == '' || !is_dir($this->certsDir)) {
                 $msg = "O caminho para os arquivos dos certificados deve ser passado!!";
                 throw new NfephpException($msg);
             }
-            if ($pfxName == '') {
+            if ($this->pfxName == '') {
                 $msg = "O nome do certificado .pfx deve ser passado!!";
                 throw new NfephpException($msg);
             }
-            if ($keyPass == '') {
+            if ($this->keyPass == '') {
                 $msg = "A senha do certificado .pfx deve ser passado!!";
                 throw new NfephpException($msg);
             }
-            if ($cnpj == '') {
+            if ($this->cnpj == '') {
                 $msg = "O numero do CNPJ do certificado deve ser passado!!";
                 throw new NfephpException($msg);
             }
-            //limpar bobagens
-            $certsDir = trim($dir);
-            $pfxName = trim($pfxName);
-            $keyPass = trim($keyPass);
-            $cnpj = trim($cnpj);
-            
-            if (substr($certsDir, -1) !== DIRECTORY_SEPARATOR) {
+            if (substr($this->certsDir, -1) !== DIRECTORY_SEPARATOR) {
                 $certsDir .= DIRECTORY_SEPARATOR;
             }
-            if (!file_exists($certsDir . $pfxName)) {
+            if (!file_exists($this->certsDir . $this->pfxName)) {
                 $msg = "O arquivo do certificado pfx não foi encontrado!!";
                 throw new NfephpException($msg);
             }
-            $this->certsDir = $certsDir;
-            $this->pfxName = $pfxName;
-            $this->keyPass = $keyPass;
-            $this->cnpj = $cnpj;
         } catch (NfephpException $e) {
-            //$this->errorMsg = ($e->getMessage());
-            //return false;
+            $this->errorMsg = ($e->getMessage());
+            throw new \Exception($msg);
+            return false;
         }
-        //return true;
-    }//fim __construct
+        return true;
+    }
     
     /**
      * loadCerts
@@ -114,10 +118,9 @@ class Pkcs12Certs
      *  $this->certKEY (com o caminho completo para o arquivo CNPJ_certKEY.pem)
      *
      * @name loadCerts
-     * @param	boolean $testaVal True testa a validade do certificado ou false não testa
      * @return	boolean true se o certificado foi carregado e false se não
      */
-    public function loadCerts($testaVal = true)
+    public function loadCerts()
     {
         try {
             if (!function_exists('openssl_pkcs12_read')) {
@@ -150,12 +153,15 @@ class Pkcs12Certs
                 $msg = "O certificado não pode ser lido!! Provavelmente corrompido ou com formato inválido!!";
                 throw new NfephpException($msg);
             }
-            if ($testaVal) {
-                //verifica sua validade
-                if (!$aResp = $this->validCerts($x509certdata['cert'])) {
-                    $msg = "Certificado invalido!! - " . $aResp['error'];
-                    throw new NfephpException($msg);
-                }
+            //verifica sua validade
+            if (!$this->validCerts($x509certdata['cert'])) {
+                $msg = "Certificado invalido!! - " . $aResp['error'];
+                throw new NfephpException($msg);
+            }
+            $cnpjCert = $this->getCNPJCert($x509certdata['cert']);
+            if ($this->cnpj != $cnpjCert) {
+                $msg = "O Certificado informado pertence a outro CNPJ!!";
+                throw new NfephpException($msg);
             }
             //aqui verifica se existem as chaves em formato PEM
             //se existirem pega a data da validade dos arquivos PEM
@@ -219,111 +225,11 @@ class Pkcs12Certs
                 $n = file_put_contents($this->certKEY, $x509certdata['pkey']."\r\n".$x509certdata['cert']);
             }
         } catch (NfephpException $e) {
-            return false;
+            throw new \Exception($e->getMessage());
         }
         return true;
     } //fim loadCerts
-
-    /**
-     * validCerts
-     * 
-     * Validaçao do cerificado digital, além de indicar
-     * a validade, este metodo carrega a propriedade
-     * mesesToexpire da classe que indica o numero de
-     * meses que faltam para expirar a validade do mesmo
-     * esta informacao pode ser utilizada para a gestao dos
-     * certificados de forma a garantir que sempre estejam validos
-     *
-     * @name validCerts
-     * @param    string  $cert Certificado digital no formato pem
-     * @param    array   $aRetorno variavel passa por referência Array com os dados do certificado
-     * @return	boolean true ou false
-     */
-    protected function validCerts($cert = '', &$aRetorno = '')
-    {
-        try {
-            if ($cert == '') {
-                $msg = "O certificado é um parâmetro obrigatorio.";
-                throw new NfephpException($msg);
-            }
-            if (!$data = openssl_x509_read($cert)) {
-                $msg = "O certificado não pode ser lido pelo SSL - $cert .";
-                throw new NfephpException($msg);
-            }
-            $flagOK = true;
-            $errorMsg = "";
-            $cert_data = openssl_x509_parse($data);
-            // reformata a data de validade;
-            $ano = substr($cert_data['validTo'], 0, 2);
-            $mes = substr($cert_data['validTo'], 2, 2);
-            $dia = substr($cert_data['validTo'], 4, 2);
-            //obtem o timestamp da data de validade do certificado
-            $dValid = gmmktime(0, 0, 0, $mes, $dia, $ano);
-            // obtem o timestamp da data de hoje
-            $dHoje = gmmktime(0, 0, 0, date("m"), date("d"), date("Y"));
-            // compara a data de validade com a data atual
-            if ($dValid < $dHoje) {
-                $flagOK = false;
-                $errorMsg = "A Validade do certificado expirou em ["  . $dia.'/'.$mes.'/'.$ano . "]";
-            } else {
-                $flagOK = $flagOK && true;
-            }
-            //diferença em segundos entre os timestamp
-            $diferenca = $dValid - $dHoje;
-            // convertendo para dias
-            $diferenca = round($diferenca /(60*60*24), 0);
-            //carregando a propriedade
-            $daysToExpire = $diferenca;
-            // convertendo para meses e carregando a propriedade
-            $m = ($ano * 12 + $mes);
-            $n = (date("y") * 12 + date("m"));
-            //numero de meses até o certificado expirar
-            $monthsToExpire = ($m-$n);
-            $this->certMonthsToExpire = $monthsToExpire;
-            $this->certDaysToExpire = $daysToExpire;
-            $this->pfxTimestamp = $dValid;
-            $aRetorno = array('status'=>$flagOK,'error'=>$errorMsg,'meses'=>$monthsToExpire,'dias'=>$daysToExpire);
-        } catch (NfephpException $e) {
-            return false;
-        }
-        return true;
-    } //fim validCerts
-
-    /**
-     * cleanCerts
-     * Retira as chaves de inicio e fim do certificado digital
-     * para inclusão do mesmo na tag assinatura do xml
-     *
-     * @name cleanCerts
-     * @param $certFile
-     * @return mixed false ou string contendo a chave digital limpa
-     */
-    protected function cleanCerts($certFile)
-    {
-        try {
-            //inicializa variavel
-            $data = '';
-            //carregar a chave publica do arquivo pem
-            if (!$pubKey = file_get_contents($certFile)) {
-                $msg = "Arquivo não encontrado - $certFile .";
-                throw new NfephpException($msg);
-            }
-            //carrega o certificado em um array usando o LF como referencia
-            $arCert = explode("\n", $pubKey);
-            foreach ($arCert as $curData) {
-                //remove a tag de inicio e fim do certificado
-                if (strncmp($curData, '-----BEGIN CERTIFICATE', 22) != 0 && strncmp($curData, '-----END CERTIFICATE', 20) != 0 ) {
-                    //carrega o resultado numa string
-                    $data .= trim($curData);
-                }
-            }
-        } catch (NfephpException $e) {
-            return false;
-        }
-        return $data;
-    }//fim cleanCerts
-    
-    
+ 
     /**
      * signXML
      * 
@@ -462,12 +368,24 @@ class Pkcs12Certs
             // libera a memoria
             openssl_free_key($pkeyid);
         } catch (NfephpException $e) {
-            return false;
+            throw new \Exception($e->getMessage());
         }
         //retorna o documento assinado
         return $xml;
     } //fim signXML
     
+    /**
+     * getCNPJCert
+     * Obtem o CNPJ do certificado digital
+     * @param string $cert_pem conteudo do certificado 
+     * @return string CNPJ
+     */
+    public function getCNPJCert($cert_pem)
+    {
+        $der = self::pem2Der($cert_pem);
+        $data = self::getOIDdata($der, '2.16.76.1.3.3');
+        return $data[0][1][1][0][1];
+    }//fim getCNPJCert
         
     /**
      * verifySignatureXML
@@ -478,7 +396,7 @@ class Pkcs12Certs
      * @param string $err variavel passada como referencia onde são retornados os erros
      * @return boolean false se não confere e true se confere
      */
-    protected function verifySignature($xml, $tag, &$err)
+    public function verifySignature($xml, $tag, &$err)
     {
         try {
             // Habilita a manipulaçao de erros da libxml
@@ -530,10 +448,92 @@ class Pkcs12Certs
                 return false;
             }
         } catch (NfephpException $e) {
-            return false;
+            throw new \Excption($e->getMessage());
         }
         return true;
     } // fim verifySignatureXML
+
+    /**
+     * validCerts
+     * 
+     * Validaçao do cerificado digital, além de indicar
+     * a validade, este metodo carrega a propriedade
+     * mesesToexpire da classe que indica o numero de
+     * meses que faltam para expirar a validade do mesmo
+     * esta informacao pode ser utilizada para a gestao dos
+     * certificados de forma a garantir que sempre estejam validos
+     *
+     * @name validCerts
+     * @param    string  $cert Certificado digital no formato pem
+     * @param    array   $aRetorno variavel passa por referência Array com os dados do certificado
+     * @return	boolean true ou false
+     */
+    protected function validCerts($cert)
+    {
+        if (!$data = openssl_x509_read($cert)) {
+            $msg = "O certificado não pode ser lido pelo SSL - $cert .";
+            throw new NfephpException($msg);
+        }
+        $cert_data = openssl_x509_parse($data);
+        // reformata a data de validade;
+        $ano = substr($cert_data['validTo'], 0, 2);
+        $mes = substr($cert_data['validTo'], 2, 2);
+        $dia = substr($cert_data['validTo'], 4, 2);
+        //obtem o timestamp da data de validade do certificado
+        $dValid = gmmktime(0, 0, 0, $mes, $dia, $ano);
+        // obtem o timestamp da data de hoje
+        $dHoje = gmmktime(0, 0, 0, date("m"), date("d"), date("Y"));
+        // compara a data de validade com a data atual
+        if ($dValid < $dHoje) {
+            $msg = "A validade do certificado expirou em ["  . $dia.'/'.$mes.'/'.$ano . "]";
+            throw new NfephpException($msg);
+        }
+        //diferença em segundos entre os timestamp
+        $diferenca = $dValid - $dHoje;
+        // convertendo para dias
+        $diferenca = round($diferenca /(60*60*24), 0);
+        //carregando a propriedade
+        $daysToExpire = $diferenca;
+        // convertendo para meses e carregando a propriedade
+        $m = ($ano * 12 + $mes);
+        $n = (date("y") * 12 + date("m"));
+        //numero de meses até o certificado expirar
+        $monthsToExpire = ($m-$n);
+        $this->certMonthsToExpire = $monthsToExpire;
+        $this->certDaysToExpire = $daysToExpire;
+        $this->pfxTimestamp = $dValid;
+        return true;
+    } //fim validCerts
+
+    /**
+     * cleanCerts
+     * Retira as chaves de inicio e fim do certificado digital
+     * para inclusão do mesmo na tag assinatura do xml
+     *
+     * @name cleanCerts
+     * @param $certFile
+     * @return mixed false ou string contendo a chave digital limpa
+     */
+    protected function cleanCerts($certFile)
+    {
+        //inicializa variavel
+        $data = '';
+        //carregar a chave publica do arquivo pem
+        if (!$pubKey = file_get_contents($certFile)) {
+            $msg = "Arquivo não encontrado - $certFile .";
+            throw new NfephpException($msg);
+        }
+        //carrega o certificado em um array usando o LF como referencia
+        $arCert = explode("\n", $pubKey);
+        foreach ($arCert as $curData) {
+            //remove a tag de inicio e fim do certificado
+            if (strncmp($curData, '-----BEGIN CERTIFICATE', 22) != 0 && strncmp($curData, '-----END CERTIFICATE', 20) != 0 ) {
+                //carrega o resultado numa string
+                $data .= trim($curData);
+            }
+        }
+        return $data;
+    }//fim cleanCerts
     
     /**
      * 
@@ -1927,17 +1927,4 @@ class Pkcs12Certs
         }
         return $abc;
     }//fim xBase128
-    
-    /**
-     * getCNPJCert
-     * Obtem o CNPJ do certificado digital
-     * @param string $cert_pem conteudo do certificado 
-     * @return string CNPJ
-     */
-    public function getCNPJCert($cert_pem)
-    {
-        $der = self::pem2Der($cert_pem);
-        $data = self::getOIDdata($der, '2.16.76.1.3.3');
-        return $data[0][1][1][0][1];
-    }//fim getCNPJCert
 }//fim da classe
