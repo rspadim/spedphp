@@ -1,16 +1,15 @@
 <?php
 
-/*
- * NFePHP (http://www.nfephp.org/)
+/**
+ * Spedphp (http://www.nfephp.org/)
  *
- * @link      http://github.com/nfephp-org/nfephp for the canonical source repository
+ * @link      http://github.com/nfephp-org/spedphp for the canonical source repository
  * @copyright Copyright (c) 2008-2013 NFePHP (http://www.nfephp.org)
- * @license   LGPL v3
- * @license   GPL v3
- * @package   NFePHP
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @package   Spedphp
  */
 
-namespace Common\Soap;
+namespace Spedphp\Common\Soap;
 
 /**
  * 
@@ -26,7 +25,6 @@ namespace Common\Soap;
  */
 class CorrectedSoapClient extends SoapClient
 {
-    
     public function __doRequest($request, $location, $action, $version, $one_way = 0)
     {
         $request = str_replace(':ns1', '', $request);
@@ -35,4 +33,4 @@ class CorrectedSoapClient extends SoapClient
         $request = str_replace("\r", '', $request);
         return parent::__doRequest($request, $location, $action, $version, $one_way);
     }
-}
+}//fim da classe
