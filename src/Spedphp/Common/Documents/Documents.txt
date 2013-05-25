@@ -1,0 +1,21 @@
+Nesta pasta ficarão as classes para geração de documentos em pdf para todas as
+atividades relativas ao SPED
+
+DANFE           Impressão do Documento Auxiliar da NFe
+DANFE NFCE      Impressão do Documento Auxiliar da NFCe
+DANFECCE        Impressao do Documento Auxiliar ca Carta de Correção da NFe
+DANFSE          Impressão do Documento Auxiliar da NFSe
+DACTE           Impressão do Documento Auxiliar da CTe
+DACTECCE        Impressao do Documento Auxiliar da Carta de Correção do CTe
+DAMDFE          Impressão do Documento Auxiliar da MDFe
+DACLE           Impressão do Documento Auxiliar da CLe
+
+Essa impressão pode ocorrer de várias formas :
+
+- PDF em tela (mais comum)
+- PDF direto para impressora
+- PDF direto para arquivo
+- HTML em tela
+- HTML direto para arquivo
+- ODF para download
+- etc...
