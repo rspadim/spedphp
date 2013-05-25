@@ -10,13 +10,13 @@
  * @package   Spedphp
  */
 
-namespace Spedphp\Common\Asn;
+namespace Spedphp\Common\Pkcs12;
 
 class Asn
 {
 
     // Tabela de OIDs .
-    protected $oidsTable = array(
+    protected static $oidsTable = array(
         '2.5.4.3' => 'CN',
         '2.5.4.4' => 'Surname',
         '2.5.4.6' => 'C',
@@ -1109,10 +1109,10 @@ class Asn
                         }
                         $i++;
                     }
-                    if (isset($this->oidsTable[$plain])) {
+                    if (isset(self::$oidsTable[$plain])) {
                         $result[] =  array(
                             'oid('.$len . '): '.$plain,
-                            $this->oidsTable[$plain]);
+                            self::$oidsTable[$plain]);
                     } else {
                         $result[] = array(
                             'oid('.$len.'): '.$plain,
