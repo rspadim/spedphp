@@ -92,7 +92,8 @@ class Pkcs12Certs
         $pfxContent = file_get_contents($pfxCert);
         //carrega os certificados e chaves para um array denominado $x509certdata
         if (!openssl_pkcs12_read($pfxContent, $x509certdata, $this->keyPass)) {
-            $this->error = "O certificado não pode ser lido!! Senha errada ou arquivo corrompido ou formato inválido!!";
+            $this->error = "O certificado não pode ser lido!! 
+                Senha errada ou arquivo corrompido ou formato inválido!!";
             return false;
         }
         //verifica sua data de validade
@@ -138,7 +139,7 @@ class Pkcs12Certs
         $xml = str_replace($order, $replace, $xml);
         libxml_use_internal_errors(true); // Habilita a manipulaçao de erros da libxml
         libxml_clear_errors(); //limpar erros anteriores que possam estar em memória
-        $xmldoc = new DOMDocument('1.0', 'utf-8');// carrega o documento no DOM
+        $xmldoc = new \DOMDocument('1.0', 'utf-8');// carrega o documento no DOM
         $xmldoc->preservWhiteSpace = false; //elimina espaços em branco
         $xmldoc->formatOutput = false;
         if ($xmldoc->loadXML($xml, LIBXML_NOBLANKS | LIBXML_NOEMPTYTAG)) {
@@ -212,11 +213,21 @@ class Pkcs12Certs
     } //fim signXML
     
         
-    public function verifySignature($xml, $tag, &$err)
+    public function verifySignature($xml = '', $tag = '', &$err = '')
     {
+        if ($xml=='') {
+            $msg = "O parâmetro xml está vazio.";
+            $err = $msg;
+            return false;
+        }
+        if ($tag=='') {
+            $msg = "O parâmetro tag está vazio.";
+            $err = $msg;
+            return false;
+        }
         // Habilita a manipulaçao de erros da libxml
         libxml_use_internal_errors(true);
-        $dom = new DOMDocument('1.0', 'utf-8');
+        $dom = new \DOMDocument('1.0', 'utf-8');
         $dom->preserveWhiteSpace = false;
         $dom->formatOutput = false;
         if (!is_file($xml)) {
@@ -332,4 +343,20 @@ class Pkcs12Certs
         $this->certKeyFile='';
         $this->expireTimestamp='';
     }// fim leaveParam
+
+    /**
+     * splitLines
+     * Divide a string do certificado publico em linhas com 76 caracteres (padrão original)
+     * 
+     * @name splitLines
+     * @param string $cnt certificado
+     * @return string certificado reformatado 
+     */
+    public static function splitLines($cnt = '')
+    {
+        if ($cnt != '') {
+            $cnt = rtrim(chunk_split(str_replace(array("\r", "\n"), '', $cnt), 76, "\n"));
+        }
+        return $cnt;
+    }//fim splitLines
 }//fim da classe
