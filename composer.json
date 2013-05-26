@@ -51,6 +51,9 @@
         "phpmailer/phpmailer": ">=v5.2.6",
         "tonicospinelli/classgeneration": ">=1.0.0"
     },
+    "require-dev": {
+        "sebastian/phpcpd": "dev-master"
+    },        
     "autoload": {
         "psr-0": {
             "": "src/"
