@@ -26,7 +26,6 @@ class Pkcs12Certs
     public $priKeyFile;
     public $certKeyFile;
     public $expireTimestamp;
-    protected $keyPass;
     public $error='';
 
     //constantes utilizadas na assinatura digital do xml
@@ -37,11 +36,10 @@ class Pkcs12Certs
     const URLTRANSFMETH2 = 'http://www.w3.org/TR/2001/REC-xml-c14n-20010315';
     const URLDIGESTMETH = 'http://www.w3.org/2000/09/xmldsig#sha1';
     
-    public function __construct($dir, $pass, $cnpj)
+    public function __construct($dir, $cnpj)
     {
         //limpar bobagens
         $this->certsDir = trim($dir);
-        $this->keyPass = trim($pass);
         $this->cnpj = trim($cnpj);
         $this->init();
     }//fim __construct
@@ -81,7 +79,7 @@ class Pkcs12Certs
         return true;
     }//fim init
     
-    public function loadNewCert($pfxName)
+    public function loadNewCert($pfxName,$keyPass)
     {
         //monta o caminho completo até o certificado pfx
         $pfxCert = $this->certsDir.$pfxName;
@@ -91,7 +89,7 @@ class Pkcs12Certs
         //carrega o certificado em um string
         $pfxContent = file_get_contents($pfxCert);
         //carrega os certificados e chaves para um array denominado $x509certdata
-        if (!openssl_pkcs12_read($pfxContent, $x509certdata, $this->keyPass)) {
+        if (!openssl_pkcs12_read($pfxContent, $x509certdata, $keyPass)) {
             $this->error = "O certificado não pode ser lido!! 
                 Senha errada ou arquivo corrompido ou formato inválido!!";
             return false;
