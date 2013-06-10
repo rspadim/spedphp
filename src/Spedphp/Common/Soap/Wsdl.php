@@ -38,9 +38,9 @@ class Wsdl
                                     $sigla.'_'.$metodo.'.asmx';
                             if ($wsdl = $this->downLoadWsdl($urlsefaz, $privateKey, $publicKey)) {
                                 file_put_contents($fileName, $wsdl);
-                                chmod($fileName, 777);
-                                echo $fileName;
-                                return true;
+                                chmod($fileName, 755);
+                                //echo $fileName;
+                                //return true;
                             } else {
                                 return false;
                             }

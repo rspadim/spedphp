@@ -11,7 +11,6 @@
 
 namespace Spedphp\Common\Soap;
 
-use \curl;
 use Common\Exception\NfephpException;
 
 class CurlSoap
