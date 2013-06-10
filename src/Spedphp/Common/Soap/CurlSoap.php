@@ -11,13 +11,13 @@
 
 namespace Spedphp\Common\Soap;
 
+use \curl;
 use Common\Exception\NfephpException;
 
 class CurlSoap
 {
     public $soapDebug = '';
     public $soapTimeout = 10;
-    public $soapDebug = '';
     public $aError = array();
     private $pubKEY;
     private $priKEY;
@@ -40,8 +40,6 @@ class CurlSoap
      * @param type $user
      * @param type $pass
      * @return boolean
-     * @throws \Common\Exception\NfephpException
-     * @throws NfephpException
      */
     public function setProxy($ipNumber, $port, $user = '', $pass = '')
     {
@@ -223,5 +221,44 @@ class CurlSoap
         }
         curl_close($oCurl);
         return $xml;
-    } //fim curlSOAP
+    } //fim send
+    
+    public function getWsdl($urlsefaz)
+    {
+        //inicia comunicação com curl
+        $oCurl = curl_init();
+        if ($this->proxyIP != '') {
+            curl_setopt($oCurl, CURLOPT_HTTPPROXYTUNNEL, 1);
+            curl_setopt($oCurl, CURLOPT_PROXYTYPE, "CURLPROXY_HTTP");
+            curl_setopt($oCurl, CURLOPT_PROXY, $this->proxyIP.':'.$this->proxyPORT);
+            if ($this->proxyPASS != '') {
+                curl_setopt($oCurl, CURLOPT_PROXYUSERPWD, $this->proxyUSER.':'.$this->proxyPASS);
+                curl_setopt($oCurl, CURLOPT_PROXYAUTH, "CURLAUTH_BASIC");
+            } //fim if senha proxy
+        }//fim if aProxy
+        curl_setopt($oCurl, CURLOPT_CONNECTTIMEOUT, $this->soapTimeout);
+        curl_setopt($oCurl, CURLOPT_URL, $urlsefaz.'');
+        curl_setopt($oCurl, CURLOPT_PORT, 443);
+        curl_setopt($oCurl, CURLOPT_VERBOSE, 1);
+        curl_setopt($oCurl, CURLOPT_HEADER, 1);
+        curl_setopt($oCurl, CURLOPT_SSLVERSION, 3);
+        curl_setopt($oCurl, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($oCurl, CURLOPT_SSL_VERIFYPEER, 0);
+        curl_setopt($oCurl, CURLOPT_SSLCERT, $this->pubKEY);
+        curl_setopt($oCurl, CURLOPT_SSLKEY, $this->priKEY);
+        curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, 1);
+        $__xml = curl_exec($oCurl);
+        $info = curl_getinfo($oCurl);
+        curl_close($oCurl);
+        //verifica se foi retornado o wsdl
+        $n = strpos($__xml, '<wsdl:def');
+        if ($n===false) {
+            //não retornou um wsdl
+            return false;
+        } else {
+            $wsdl = trim(substr($__xml, $n));
+            $wsdl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".$wsdl;
+        }
+        return $wsdl;
+    }//fim getWsdl
 }//fim da classe CurlSoap

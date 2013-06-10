@@ -1,8 +1,10 @@
 <?php
 
-namespace SpedPHP\Common\Soap;
+namespace Spedphp\Common\Soap;
 
-use SpedPHP\Common\Exception;
+use Spedphp\Common\Soap\CurlSoap;
+use Spedphp\Common\Exception;
+use LSS\XML2Array;
 
 /**
  * Esta classe trata os wsdl para comunicação com os webservices 
@@ -11,9 +13,9 @@ use SpedPHP\Common\Exception;
  */
 class Wsdl
 {
-    public function updateWsdl()
+    public function updateWsdl($wsdlDir, $wsFile, $privateKey, $publicKey)
     {
-        $wsFile = '../config/nfe_ws2.xml';
+        $retorno = true;
         $xml = file_get_contents($wsFile);
         //converte o xml em array
         $ws = XML2Array::createArray($xml);
@@ -31,16 +33,28 @@ class Wsdl
                         $metodo=$j['@attributes']['method'];
                         $versao = $j['@attributes']['version'];
                         if ($url != '') {
-                            $aS[] = $sigla;
-                            $aA[] = $amb;
-                            $aN[] = $nome;
-                            $aU[] = $url.'?wsdl';
-                            $aM[] = $metodo;
-                            $aV[] = $versao;
+                            $urlsefaz = $url.'?wsdl';
+                            $fileName = $wsdlDir.DIRECTORY_SEPARATOR.$amb.DIRECTORY_SEPARATOR.
+                                    $sigla.'_'.$metodo.'.asmx';
+                            if ($wsdl = $this->downLoadWsdl($urlsefaz, $privateKey, $publicKey)) {
+                                file_put_contents($fileName, $wsdl);
+                                chmod($fileName, 777);
+                                echo $fileName;
+                                return true;
+                            } else {
+                                return false;
+                            }
                         }
                     }
                 }
             }
         }
+        return true;
+    }//fim updateWsdl
+    
+    protected function downLoadWsdl($url, $privateKey, $publicKey)
+    {
+        $soap = new CurlSoap($privateKey, $publicKey, $timeout = 10);
+        return $soap->getWsdl($url);
     }//fim downLoadWsdl
-}
+}//fim WSDL
