@@ -1,14 +1,18 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Spedphp (http://www.nfephp.org/)
+ *
+ * @link      http://github.com/nfephp-org/spedphp for the canonical source repository
+ * @copyright Copyright (c) 2008-2013 NFePHP (http://www.nfephp.org)
+ * @license   http://www.gnu.org/licenses/lesser.html LGPL v3
+ * @package   Spedphp
  */
 
-namespace Common\Soap;
+namespace Spedphp\Common\Soap;
 
-use Common\Soap\CorrectedSoapClient;
-use Common\Exception\NfephpException;
+use Spedphp\Common\Soap\CorrectedSoapClient;
+use Spedphp\Common\Exception\NfephpException;
 use LSS\XML2Array;
 
 class NatSoap
@@ -79,8 +83,16 @@ class NatSoap
      * @param string $UF unidade da federação, necessário para diferenciar AM, MT e PR
      * @return mixed false se houve falha ou o retorno em xml do SEFAZ
      */
-    public function send($UF = '', $SVAN = false, $SCAN = false, $namespace = '', $cabecalho = '', $dados = '', $metodo = '', $ambiente = '2' )
-    {
+    public function send(
+        $UF = '',
+        $SVAN = false,
+        $SCAN = false,
+        $namespace = '',
+        $cabecalho = '',
+        $dados = '',
+        $metodo = '',
+        $ambiente = '2'
+    ) {
         try {
             if (!class_exists("SoapClient")) {
                 $msg = "A classe SOAP não está disponível no PHP, veja a configuração.";
@@ -155,123 +167,4 @@ class NatSoap
         }
         return $resposta;
     } //fim nfeSOAP
-    
-    /**
-     * 
-     * @param type $ufsigla
-     * @param type $wsfile
-     */
-    public function downloadWsdl($ufsigla = '', $wsfile = '')
-    {
-        if ($wsfile == ''){
-            
-        }
-        
-        if ($ufsigla != '') {
-            
-        }
-        $pubKey = $this->pubKEY;
-        $priKey = $this->priKEY;
-        
-        //carrega o conteudo da lista de webservices
-        $xml = file_get_contents($wsfile);
-        //converte o xml em array
-        //$xml2a = new XML2Array();
-        
-        $ws = XML2Array::createArray($xml);
-        
-        //para cada UF
-        foreach($ws['WS']['UF'] as $uf){
-            $sigla = $uf['sigla'];
-            if ($ufsigla != '') {
-                if ($sigla == $ufsigla) {
-                    $ambiente = array('homologacao','producao');
-                    //para cada ambiente
-                    foreach($ambiente as $amb){
-                        $h = $uf[$amb];
-                        if (isset($h)){
-                            foreach($h as $k => $j){
-                                $nome = $k;
-                                $url=$j['@value'];
-                                $metodo=$j['@attributes']['method'];
-                                $versao = $j['@attributes']['version'];
-                                if ($url != ''){
-                                    $aS[] = $sigla;
-                                    $aA[] = $amb;
-                                    $aN[] = $nome;
-                                    $aU[] = $url.'?wsdl';
-                                    $aM[] = $metodo;
-                                    $aV[] = $versao;
-                                }    
-                            }
-                        }
-                    }
-                }
-            } else {
-                $ambiente = array('homologacao','producao');
-                //para cada ambiente
-                foreach($ambiente as $amb){
-                    $h = $uf[$amb];
-                    if (isset($h)){
-                        foreach($h as $k => $j){
-                            $nome = $k;
-                            $url=$j['@value'];
-                            $metodo=$j['@attributes']['method'];
-                            $versao = $j['@attributes']['version'];
-                            if ($url != ''){
-                                $aS[] = $sigla;
-                                $aA[] = $amb;
-                                $aN[] = $nome;
-                                $aU[] = $url.'?wsdl';
-                                $aM[] = $metodo;
-                                $aV[] = $versao;
-                            }    
-                        }
-                    }
-                }
-            }    
-        }//fim foreach
-        
-        //inicia o loop para baixar os arquivos wsdl
-        $i = 0;
-        foreach($aS as $s){
-            $urlsefaz = $aU[$i];
-            if (!is_dir($this->pathWsdl.$aA[$i])) {
-                mkdir($this->pathWsdl.$aA[$i], 0777);
-            }
-            $fileName = $this->pathWsdl.$aA[$i].DIRECTORY_SEPARATOR.$aS[$i].'_'.$aM[$i].'.asmx';
-             
-            //inicia comunicação com curl
-            $oCurl = curl_init();
-            curl_setopt($oCurl, CURLOPT_CONNECTTIMEOUT, 10);
-            curl_setopt($oCurl, CURLOPT_URL, $urlsefaz.'');
-            curl_setopt($oCurl, CURLOPT_PORT , 443);
-            curl_setopt($oCurl, CURLOPT_VERBOSE, 1);
-            curl_setopt($oCurl, CURLOPT_HEADER, 1); //retorna o cabeçalho de resposta
-            curl_setopt($oCurl, CURLOPT_SSLVERSION, 3);
-            curl_setopt($oCurl, CURLOPT_SSL_VERIFYHOST, 0);
-            curl_setopt($oCurl, CURLOPT_SSL_VERIFYPEER, 0);
-            curl_setopt($oCurl, CURLOPT_SSLCERT, $pubKey);
-            curl_setopt($oCurl, CURLOPT_SSLKEY, $priKey);
-            curl_setopt($oCurl, CURLOPT_RETURNTRANSFER, 1);
-            $__xml = curl_exec($oCurl);
-            $info = curl_getinfo($oCurl);
-            curl_close($oCurl);
-            //verifica se foi retornado o wsdl
-            $n = strpos($__xml,'<wsdl:def');
-            if ($n === false){
-                //não retornou um wsdl
-            } else {
-                $wsdl = trim(substr($__xml, $n));
-                $wsdl = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".$wsdl;
-                if (is_file($fileName)) {
-                    unlink($fileName);
-                }
-                file_put_contents($fileName,$wsdl);
-                chmod($fileName, 777);
-            }    
-            $i++;
-        } //fim do processo    
-    }//fim downloadWsdl        
-    
 }//fim da classe NatSoap

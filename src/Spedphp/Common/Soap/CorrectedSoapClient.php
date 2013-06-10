@@ -18,8 +18,6 @@ namespace Spedphp\Common\Soap;
  * Remove algumas tags para adequar a comunicação
  * ao padrão "esquisito" utilizado pelas SEFAZ
  *
- * @version 1.0.4
- * @package NFePHP
  * @name CorrectSoapClient
  *
  */
@@ -27,10 +25,9 @@ class CorrectedSoapClient extends SoapClient
 {
     public function __doRequest($request, $location, $action, $version, $one_way = 0)
     {
-        $request = str_replace(':ns1', '', $request);
-        $request = str_replace('ns1:', '', $request);
-        $request = str_replace("\n", '', $request);
-        $request = str_replace("\r", '', $request);
+        $aFind = array(":ns1","ns1:","\n","\r");
+        $aReplace = array("","","","");
+        $request = str_replace($aFind, $aReplace, $request);
         return parent::__doRequest($request, $location, $action, $version, $one_way);
     }
 }//fim da classe
